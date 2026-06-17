@@ -1,0 +1,69 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}CineBio - Inicio{% endblock %}
+
+{% block contenido %}
+
+<section class="banner-destacado" {% if peliculas %}style="background-image: url('{{ peliculas.0.imagen.url }}');"{% endif %}>
+    <div class="contenido-banner">
+        {% if peliculas %}
+        <h2>{{ peliculas.0.nombre }}</h2>
+        <button>Comprar</button>
+        {% endif %}
+    </div>
+    <div class="indicadores-carrusel">
+        <span class="indicador activo"></span>
+        <span class="indicador"></span>
+        <span class="indicador"></span>
+        <span class="indicador"></span>
+    </div>
+</section>
+
+<section class="barra-filtros">
+    <p>¿Qué película quieres ver? Elige tus opciones y presiona Filtrar</p>
+    <form action="/buscar" method="GET">
+        <select name="pelicula">
+            <option value="">Por película</option>
+            {% for pelicula in peliculas %}
+            <option value="{{ pelicula.id }}">{{ pelicula.nombre }}</option>
+            {% endfor %}
+        </select>
+        <select name="ciudad">
+            <option value="">Por ciudad</option>
+        </select>
+        <select name="cine">
+            <option value="">Por cine</option>
+        </select>
+        <select name="fecha">
+            <option value="">Por fecha</option>
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+</section>
+
+<section class="cartelera">
+    <h2>Películas</h2>
+    <div class="grilla-peliculas">
+        {% for pelicula in peliculas %}
+        <article class="tarjeta-pelicula">
+            <a href="{% url 'detalle_pelicula' pelicula.id %}">
+                {% if pelicula.imagen %}
+                <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}">
+                {% endif %}
+            </a>
+        </article>
+        {% empty %}
+        <p>No existen películas registradas.</p>
+        {% endfor %}
+
+        <article class="tarjeta-ver-mas">
+            <a href="#">
+                <h3>Ver más películas</h3>
+                <span>&gt;</span>
+            </a>
+        </article>
+    </div>
+</section>
+
+{% endblock %}

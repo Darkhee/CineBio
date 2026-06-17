@@ -1,0 +1,71 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Películas — CineBio Admin{% endblock %}
+{% block page_title %}Películas{% endblock %}
+{% block breadcrumb %} › Películas{% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Listado de Películas ({{ peliculas|length }})</h2>
+        <a href="{% url 'portal_admin:pelicula_create' %}" class="btn btn-primary">
+            ＋ Nueva Película
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        {% if peliculas %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Póster</th>
+                    <th>Nombre</th>
+                    <th>Duración</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pelicula in peliculas %}
+                <tr>
+                    <td>
+                        {% if pelicula.imagen %}
+                        <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}" class="table-img">
+                        {% else %}
+                        <span style="color:var(--text-secondary);font-size:12px;">Sin imagen</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ pelicula.nombre }}</strong>
+                    </td>
+                    <td>{{ pelicula.duracion }} min</td>
+                    <td style="max-width:300px;">
+                        <span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--text-secondary);">
+                            {{ pelicula.descripcion }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{% url 'portal_admin:pelicula_edit' pelicula.pk %}"
+                               class="btn btn-warning btn-sm">✏️ Editar</a>
+                            <a href="{% url 'portal_admin:pelicula_delete' pelicula.pk %}"
+                               class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🎬</div>
+            <p>No hay películas registradas.<br>
+               <a href="{% url 'portal_admin:pelicula_create' %}" style="color:var(--accent);">Agregar la primera</a>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

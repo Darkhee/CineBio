@@ -1,0 +1,67 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Funciones — CineBio Admin{% endblock %}
+{% block page_title %}Funciones / Horarios{% endblock %}
+{% block breadcrumb %} › Funciones{% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Funciones programadas ({{ funciones|length }})</h2>
+        <a href="{% url 'portal_admin:funcion_create' %}" class="btn btn-primary">
+            ＋ Nueva Función
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        {% if funciones %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Película</th>
+                    <th>Sala</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Tipo</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcion in funciones %}
+                <tr>
+                    <td><strong>{{ funcion.pelicula.nombre }}</strong></td>
+                    <td>{{ funcion.sala.nombre }}</td>
+                    <td>{{ funcion.fecha }}</td>
+                    <td>{{ funcion.hora|time:"H:i" }}</td>
+                    <td>
+                        <span class="badge {% if '3d' in funcion.tipo %}badge-3d{% else %}badge-2d{% endif %}">
+                            {{ funcion.get_tipo_display }}
+                        </span>
+                    </td>
+                    <td>${{ funcion.precio|floatformat:"0" }}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{% url 'portal_admin:funcion_edit' funcion.pk %}"
+                               class="btn btn-warning btn-sm">✏️ Editar</a>
+                            <a href="{% url 'portal_admin:funcion_delete' funcion.pk %}"
+                               class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🕐</div>
+            <p>No hay funciones programadas.<br>
+               <a href="{% url 'portal_admin:funcion_create' %}" style="color:var(--accent);">Agregar la primera</a>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

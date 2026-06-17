@@ -1,0 +1,66 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}{{ titulo }} — CineBio Admin{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block breadcrumb %}
+    › <a href="{% url 'portal_admin:productos_list' %}">Confitería</a> › {{ titulo }}
+{% endblock %}
+
+{% block contenido %}
+
+<div class="form-card card">
+    <div class="card-header">
+        <h2>{{ titulo }}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="id_nombre">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                    <ul class="errorlist">{% for e in form.nombre.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-field">
+                    <label for="id_categoria">{{ form.categoria.label }}</label>
+                    {{ form.categoria }}
+                    {% if form.categoria.errors %}
+                        <ul class="errorlist">{% for e in form.categoria.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-field">
+                    <label for="id_precio">{{ form.precio.label }}</label>
+                    {{ form.precio }}
+                    {% if form.precio.errors %}
+                        <ul class="errorlist">{% for e in form.precio.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="id_imagen">{{ form.imagen.label }}</label>
+                {{ form.imagen }}
+                {% if producto and producto.imagen %}
+                <div class="current-image-preview square">
+                    <img src="{{ producto.imagen.url }}" alt="Imagen actual">
+                    <span>Imagen actual — sube una nueva para reemplazarla</span>
+                </div>
+                {% endif %}
+                {% if form.imagen.errors %}
+                    <ul class="errorlist">{% for e in form.imagen.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 {{ boton }}</button>
+                <a href="{% url 'portal_admin:productos_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

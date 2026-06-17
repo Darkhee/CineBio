@@ -1,0 +1,25 @@
+{% extends 'app/base.html' %}
+
+{% block titulo %}Registro - CineBio{% endblock %}
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="formulario-container">
+    <h1>Únete a nuestro club de socio</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ formulario.as_p }}
+        <button type="submit">Unirme</button>
+    </form>
+
+    <a href="{% url 'login' %}">¿Ya tienes cuenta? Inicia sesión</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Elección de Butacas - CineBio{% endblock %}
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="butacas-container">
+    <div class="butacas-info">
+        {% if funcion.pelicula.imagen %}
+        <img src="{{ funcion.pelicula.imagen.url }}" alt="{{ funcion.pelicula.nombre }}">
+        {% endif %}
+        <h2>{{ funcion.pelicula.nombre }}<br><small>{{ funcion.get_tipo_display }}</small></h2>
+        <p>📅 Hoy {{ funcion.fecha }}</p>
+        <p>🕐 {{ funcion.hora|time:"H:i" }}hrs</p>
+        <p><strong>{{ funcion.sala.nombre }}</strong> 🎟️</p>
+    </div>
+
+    <div class="butacas-sala">
+        <div class="pantalla">Pantalla</div>
+
+        <form method="POST" action="{% url 'confirmar_butacas' funcion.id %}">
+            {% csrf_token %}
+
+            {% for fila, butacas in filas.items %}
+            <div class="fila-butacas">
+                <span class="fila-letra">{{ fila }}</span>
+                {% for butaca in butacas %}
+                    {% if butaca.estado == 'disponible' %}
+                        <input type="checkbox" name="butacas" value="{{ butaca.id }}"
+                               id="b{{ butaca.id }}" class="butaca-check"
+                               data-label="{{ fila }}{{ butaca.numero }}">
+                        <label for="b{{ butaca.id }}" class="butaca disponible"
+                               title="{{ fila }}{{ butaca.numero }}"></label>
+                    {% elif butaca.estado == 'ocupada' %}
+                        <span class="butaca ocupada" title="{{ fila }}{{ butaca.numero }} — Ocupada"></span>
+                    {% else %}
+                        <span class="butaca inhabilitada" title="{{ fila }}{{ butaca.numero }} — Inhabilitada"></span>
+                    {% endif %}
+                {% endfor %}
+                <span class="fila-letra">{{ fila }}</span>
+            </div>
+            {% endfor %}
+
+            <div class="butacas-footer">
+                <div class="leyenda">
+                    <span><span class="butaca disponible mini"></span> Butaca disponible</span>
+                    <span><span class="butaca ocupada mini"></span> Butaca ocupada</span>
+                    <span><span class="butaca inhabilitada mini"></span> Butaca inhabilitada</span>
+                </div>
+                <div class="seleccion-info">
+                    <p>Butacas Seleccionadas: <strong id="lista-seleccion">Ninguna</strong></p>
+                    <button type="submit" class="btn-continuar" id="btn-continuar" disabled>Continuar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes  = document.querySelectorAll('.butaca-check');
+    const listaEl     = document.getElementById('lista-seleccion');
+    const btnContinuar = document.getElementById('btn-continuar');
+
+    function actualizar() {
+        const seleccionadas = [...checkboxes].filter(c => c.checked);
+        if (seleccionadas.length === 0) {
+            listaEl.textContent = 'Ninguna';
+            btnContinuar.disabled = true;
+        } else {
+            const nombres = seleccionadas.map(c => c.dataset.label);
+            listaEl.textContent = nombres.join(', ');
+            btnContinuar.disabled = false;
+        }
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', actualizar));
+    actualizar();
+});
+</script>
+
+{% endblock %}

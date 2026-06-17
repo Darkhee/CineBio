@@ -1,0 +1,240 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}{{ sala.nombre }} — Butacas — CineBio Admin{% endblock %}
+{% block page_title %}{{ sala.nombre }} — Gestión de Butacas{% endblock %}
+{% block breadcrumb %}
+    › <a href="{% url 'portal_admin:butacas_salas' %}">Butacas</a> › {{ sala.nombre }}
+{% endblock %}
+
+{% block contenido %}
+
+<div class="card" style="max-width:900px;">
+    <div class="card-header">
+        <h2>{{ sala.nombre }}</h2>
+        <div style="font-size:12px;color:var(--text-secondary);">
+            Haz clic en las butacas disponibles para inhabilitarlas o reactivarlas
+        </div>
+    </div>
+    <div class="card-body">
+
+        <form method="post" id="form-butacas">
+            {% csrf_token %}
+
+            <!-- Pantalla -->
+            <div class="admin-pantalla">Pantalla</div>
+
+            <!-- Mapa de butacas -->
+            <div class="admin-sala-wrap">
+                {% for fila, butacas in filas.items %}
+                <div class="admin-fila">
+                    <span class="admin-fila-letra">{{ fila }}</span>
+
+                    {% for butaca in butacas %}
+                        {% if butaca.estado == 'ocupada' %}
+                            <!-- Ocupada: no se puede cambiar -->
+                            <span class="admin-butaca ocupada" title="{{ fila }}{{ butaca.numero }} — Ocupada">
+                                {{ fila }}{{ butaca.numero }}
+                            </span>
+                        {% else %}
+                            <!-- Disponible / inhabilitada: toggleable -->
+                            <input type="checkbox"
+                                   name="butacas_inhabilitar"
+                                   value="{{ butaca.id }}"
+                                   id="ab{{ butaca.id }}"
+                                   class="admin-butaca-check"
+                                   {% if butaca.estado == 'inhabilitada' %}checked{% endif %}>
+                            <label for="ab{{ butaca.id }}"
+                                   class="admin-butaca {% if butaca.estado == 'inhabilitada' %}inhabilitada{% else %}disponible{% endif %}"
+                                   title="{{ fila }}{{ butaca.numero }}">
+                                {{ fila }}{{ butaca.numero }}
+                            </label>
+                        {% endif %}
+                    {% endfor %}
+
+                    <span class="admin-fila-letra">{{ fila }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Leyenda -->
+            <div class="admin-leyenda">
+                <span><span class="admin-butaca disponible mini"></span> Disponible</span>
+                <span><span class="admin-butaca inhabilitada mini"></span> Inhabilitada</span>
+                <span><span class="admin-butaca ocupada mini"></span> Ocupada (no editable)</span>
+            </div>
+
+            <!-- Footer con resumen y guardar -->
+            <div class="admin-butacas-footer">
+                <div class="resumen-inhabilitar">
+                    Inhabilitadas seleccionadas:
+                    <strong id="contador-inhabilitar">0</strong>
+                    <span id="lista-inhabilitar" style="font-size:12px; color:var(--text-secondary); margin-left:8px;"></span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <a href="{% url 'portal_admin:butacas_salas' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<style>
+.admin-pantalla {
+    background: #e5e7eb;
+    border-radius: 6px;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 24px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.admin-sala-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.admin-fila {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-fila-letra {
+    width: 22px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.admin-butaca-check { display: none; }
+
+.admin-butaca {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+    flex-shrink: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.admin-butaca.disponible {
+    background: #fff;
+    border: 2px solid #d1d5db;
+    color: var(--text-secondary);
+}
+
+.admin-butaca.disponible:hover {
+    border-color: var(--accent);
+    background: #fff5f5;
+    color: var(--accent);
+}
+
+/* Cuando el checkbox está marcado → inhabilitada visualmente */
+.admin-butaca-check:checked + .admin-butaca {
+    background: #3498db !important;
+    border-color: #2980b9 !important;
+    color: #fff !important;
+}
+
+.admin-butaca.inhabilitada {
+    background: #3498db;
+    border: 2px solid #2980b9;
+    color: #fff;
+}
+
+.admin-butaca.ocupada {
+    background: #e74c3c;
+    border: 2px solid #c0392b;
+    color: #fff;
+    cursor: not-allowed;
+    font-size: 9px;
+}
+
+.admin-butaca.mini {
+    width: 18px;
+    height: 18px;
+    font-size: 0;
+    border-radius: 4px;
+    cursor: default;
+}
+
+.admin-leyenda {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-leyenda span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+}
+
+.admin-butacas-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.resumen-inhabilitar {
+    font-size: 14px;
+    font-weight: 500;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const checks   = document.querySelectorAll('.admin-butaca-check');
+    const contador = document.getElementById('contador-inhabilitar');
+    const lista    = document.getElementById('lista-inhabilitar');
+
+    function actualizar() {
+        const seleccionados = [...checks].filter(c => c.checked);
+        contador.textContent = seleccionados.length;
+
+        if (seleccionados.length === 0) {
+            lista.textContent = '';
+        } else {
+            // Get seat label from the label element's title attribute
+            const nombres = seleccionados.map(c => {
+                const lbl = document.querySelector(`label[for="${c.id}"]`);
+                return lbl ? lbl.getAttribute('title') : '';
+            }).filter(Boolean);
+            lista.textContent = '(' + nombres.join(', ') + ')';
+        }
+    }
+
+    checks.forEach(c => c.addEventListener('change', actualizar));
+    actualizar(); // run on load to show already-disabled seats
+});
+</script>
+
+{% endblock %}

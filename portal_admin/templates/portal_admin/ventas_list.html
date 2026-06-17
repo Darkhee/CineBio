@@ -1,0 +1,94 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Ventas — CineBio Admin{% endblock %}
+{% block page_title %}Ventas{% endblock %}
+{% block breadcrumb %} › Ventas{% endblock %}
+
+{% block contenido %}
+
+<!-- Resumen -->
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); margin-bottom:24px;">
+    <div class="stat-card">
+        <div class="stat-icon purple">🎟️</div>
+        <div class="stat-info">
+            <div class="stat-value">{{ compras|length }}</div>
+            <div class="stat-label">Compras totales</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">💰</div>
+        <div class="stat-info">
+            <div class="stat-value">${{ total_recaudado|floatformat:"0" }}</div>
+            <div class="stat-label">Total recaudado (CLP)</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de ventas -->
+<div class="card">
+    <div class="card-header">
+        <h2>Historial de Compras</h2>
+    </div>
+
+    <div class="table-responsive">
+        {% if compras %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Película</th>
+                    <th>Sala</th>
+                    <th>Fecha función</th>
+                    <th>Butacas</th>
+                    <th>Confitería</th>
+                    <th>Fecha compra</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                <tr>
+                    <td style="color:var(--text-secondary); font-weight:600;">#{{ compra.id }}</td>
+                    <td>
+                        <strong>{{ compra.usuario.username }}</strong><br>
+                        <span style="font-size:11px;color:var(--text-secondary);">{{ compra.usuario.email }}</span>
+                    </td>
+                    <td>{{ compra.funcion.pelicula.nombre }}</td>
+                    <td>{{ compra.funcion.sala.nombre }}</td>
+                    <td>
+                        {{ compra.funcion.fecha }}<br>
+                        <span style="font-size:11px;color:var(--text-secondary);">{{ compra.funcion.hora|time:"H:i" }} hrs</span>
+                    </td>
+                    <td>
+                        {% for entrada in compra.entrada_set.all %}
+                            <span class="badge badge-2d" style="margin:1px;">{{ entrada.butaca.fila }}{{ entrada.butaca.numero }}</span>
+                        {% empty %}
+                            <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for item in compra.itemconfiteria_set.all %}
+                            <span style="font-size:12px;display:block;">{{ item.producto.nombre }} ×{{ item.cantidad }}</span>
+                        {% empty %}
+                            <span style="color:var(--text-secondary);font-size:12px;">Sin confitería</span>
+                        {% endfor %}
+                    </td>
+                    <td style="font-size:12px;">{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <strong style="color:var(--success);">${{ compra.total|floatformat:"0" }}</strong>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🎟️</div>
+            <p>No hay ventas registradas aún.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

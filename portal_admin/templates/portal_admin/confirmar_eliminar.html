@@ -1,0 +1,27 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Eliminar {{ tipo }} — CineBio Admin{% endblock %}
+{% block page_title %}Confirmar eliminación{% endblock %}
+
+{% block contenido %}
+
+<div style="display:flex;justify-content:center;align-items:center;min-height:60vh;">
+    <div class="confirm-card">
+        <div class="confirm-icon">⚠️</div>
+        <h2>¿Eliminar esta {{ tipo }}?</h2>
+        <p>
+            Estás a punto de eliminar:<br>
+            <span class="object-name">"{{ objeto }}"</span><br><br>
+            Esta acción <strong>no se puede deshacer</strong>.
+        </p>
+        <div class="confirm-actions">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            </form>
+            <a href="{% url cancelar_url %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

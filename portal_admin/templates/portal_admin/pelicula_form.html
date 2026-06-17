@@ -1,0 +1,66 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}{{ titulo }} — CineBio Admin{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block breadcrumb %}
+    › <a href="{% url 'portal_admin:peliculas_list' %}">Películas</a> › {{ titulo }}
+{% endblock %}
+
+{% block contenido %}
+
+<div class="form-card card">
+    <div class="card-header">
+        <h2>{{ titulo }}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="id_nombre">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                    <ul class="errorlist">{% for e in form.nombre.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="id_imagen">{{ form.imagen.label }}</label>
+                {{ form.imagen }}
+                {% if pelicula and pelicula.imagen %}
+                <div class="current-image-preview">
+                    <img src="{{ pelicula.imagen.url }}" alt="Imagen actual">
+                    <span>Imagen actual — sube una nueva para reemplazarla</span>
+                </div>
+                {% endif %}
+                {% if form.imagen.errors %}
+                    <ul class="errorlist">{% for e in form.imagen.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="id_descripcion">{{ form.descripcion.label }}</label>
+                {{ form.descripcion }}
+                {% if form.descripcion.errors %}
+                    <ul class="errorlist">{% for e in form.descripcion.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="id_duracion">{{ form.duracion.label }}</label>
+                {{ form.duracion }}
+                <span class="help-text">Ingresa la duración en minutos (ej: 120)</span>
+                {% if form.duracion.errors %}
+                    <ul class="errorlist">{% for e in form.duracion.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 {{ boton }}</button>
+                <a href="{% url 'portal_admin:peliculas_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

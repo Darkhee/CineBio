@@ -1,0 +1,61 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}{{ pelicula.nombre }} - CineBio{% endblock %}
+
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="detalle-container">
+
+    <div class="detalle-top">
+        <div class="detalle-nombre">
+            <h1>{{ pelicula.nombre }}</h1>
+        </div>
+        <div class="detalle-centro">
+            <div class="detalle-imagen">
+                {% if pelicula.imagen %}
+                <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}">
+                {% endif %}
+            </div>
+            <div class="detalle-sinopsis">
+                <h3>Sinopsis</h3>
+                <p>{{ pelicula.descripcion }}</p>
+                <p><strong>Duración:</strong> {{ pelicula.duracion }} minutos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="detalle-funciones">
+        <h2>Elegir función</h2>
+        <div class="funciones-fecha">
+            <span>Fecha</span>
+            <span>Hoy</span>
+        </div>
+        {% for tipo, funciones in funciones_por_tipo.items %}
+        <div class="funciones-tipo">
+            <p>{{ tipo }}</p>
+            <div class="horarios">
+                {% for funcion in funciones %}
+                <a href="{% url 'seleccionar_butacas' funcion.id %}" class="horario-btn">
+                    {{ funcion.hora|time:"H:i" }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <p>No hay funciones disponibles.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'listar_peliculas' %}" class="btn-volver">← Volver al inicio</a>
+
+</div>
+
+{% endblock %}

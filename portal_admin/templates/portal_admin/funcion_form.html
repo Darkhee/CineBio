@@ -1,0 +1,78 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}{{ titulo }} — CineBio Admin{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block breadcrumb %}
+    › <a href="{% url 'portal_admin:funciones_list' %}">Funciones</a> › {{ titulo }}
+{% endblock %}
+
+{% block contenido %}
+
+<div class="form-card card">
+    <div class="card-header">
+        <h2>{{ titulo }}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="id_pelicula">{{ form.pelicula.label }}</label>
+                {{ form.pelicula }}
+                {% if form.pelicula.errors %}
+                    <ul class="errorlist">{% for e in form.pelicula.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="form-field">
+                <label for="id_sala">{{ form.sala.label }}</label>
+                {{ form.sala }}
+                <span class="help-text">Las salas se crean y administran desde el panel de Django (/admin/)</span>
+                {% if form.sala.errors %}
+                    <ul class="errorlist">{% for e in form.sala.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-field">
+                    <label for="id_fecha">{{ form.fecha.label }}</label>
+                    {{ form.fecha }}
+                    {% if form.fecha.errors %}
+                        <ul class="errorlist">{% for e in form.fecha.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-field">
+                    <label for="id_hora">{{ form.hora.label }}</label>
+                    {{ form.hora }}
+                    {% if form.hora.errors %}
+                        <ul class="errorlist">{% for e in form.hora.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-field">
+                    <label for="id_tipo">{{ form.tipo.label }}</label>
+                    {{ form.tipo }}
+                    {% if form.tipo.errors %}
+                        <ul class="errorlist">{% for e in form.tipo.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-field">
+                    <label for="id_precio">{{ form.precio.label }}</label>
+                    {{ form.precio }}
+                    {% if form.precio.errors %}
+                        <ul class="errorlist">{% for e in form.precio.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 {{ boton }}</button>
+                <a href="{% url 'portal_admin:funciones_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

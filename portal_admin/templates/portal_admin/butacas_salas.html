@@ -1,0 +1,63 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Gestionar Butacas — CineBio Admin{% endblock %}
+{% block page_title %}Gestionar Butacas{% endblock %}
+{% block breadcrumb %} › Butacas{% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Selecciona una Sala</h2>
+    </div>
+    <div class="card-body">
+        {% if salas %}
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px;">
+            {% for sala in salas %}
+            <a href="{% url 'portal_admin:butacas_sala_detalle' sala.pk %}" style="text-decoration:none;">
+                <div class="sala-card">
+                    <div class="sala-icon">🏛️</div>
+                    <div class="sala-nombre">{{ sala.nombre }}</div>
+                    <div class="sala-detalle">
+                        {% with total=sala.butaca_set.count %}
+                        {{ total }} butaca{{ total|pluralize }}
+                        {% endwith %}
+                    </div>
+                    <div class="sala-accion">Gestionar butacas →</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🏛️</div>
+            <p>No hay salas registradas.<br>
+            Las salas se crean desde el panel Django (<code>/admin/</code>).</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.sala-card {
+    background: #f7f8fc;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: all .18s;
+    cursor: pointer;
+}
+.sala-card:hover {
+    border-color: var(--accent);
+    background: #fff5f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(192,57,43,.12);
+}
+.sala-icon    { font-size: 36px; margin-bottom: 10px; }
+.sala-nombre  { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+.sala-detalle { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.sala-accion  { font-size: 12px; color: var(--accent); margin-top: 12px; font-weight: 500; }
+</style>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Confitería - CineBio{% endblock %}
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="confiteria-container">
+    <div class="confiteria-sidebar">
+        <h2>CineBio</h2>
+        <p>Concepción</p>
+        <hr>
+        <p>Confitería: <span id="total-items">0</span></p>
+        <p><strong>Total: $<span id="total-precio">0</span></strong></p>
+    </div>
+
+    <div class="confiteria-main">
+        <div class="categorias-tabs">
+            {% for key, valor in categorias %}
+            <button class="tab-btn" onclick="filtrar('{{ key }}')">{{ valor }}</button>
+            {% endfor %}
+        </div>
+
+        <form method="POST" action="{% url 'pago' %}">
+            {% csrf_token %}
+            <div class="productos-grid" id="productos">
+                {% for producto in productos %}
+                <div class="producto-card" data-categoria="{{ producto.categoria }}" data-precio="{{ producto.precio }}">
+                    {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                    {% endif %}
+                    <h3>{{ producto.nombre }}</h3>
+                    <div class="producto-controles">
+                        <button type="button" class="btn-menos" onclick="cambiarCantidad(this, -1)">-</button>
+                        <span class="cantidad">0</span>
+                        <button type="button" class="btn-mas" onclick="cambiarCantidad(this, 1)">+</button>
+                        <span>${{ producto.precio }}</span>
+                    </div>
+                    <input type="hidden" name="cantidad_{{ producto.id }}" class="input-cantidad" value="0">
+                </div>
+                {% empty %}
+                <p>No hay productos disponibles.</p>
+                {% endfor %}
+            </div>
+            <div class="confiteria-footer">
+                <button type="submit" class="btn-continuar">Continuar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function filtrar(categoria) {
+        const productos = document.querySelectorAll('.producto-card');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('activo'));
+        event.target.classList.add('activo');
+        productos.forEach(p => {
+            p.style.display = p.dataset.categoria === categoria ? 'block' : 'none';
+        });
+    }
+
+    function cambiarCantidad(btn, delta) {
+        const card = btn.closest('.producto-card');
+        const span = card.querySelector('.cantidad');
+        const input = card.querySelector('.input-cantidad');
+        let cantidad = parseInt(span.textContent) + delta;
+        if (cantidad < 0) cantidad = 0;
+        span.textContent = cantidad;
+        input.value = cantidad;
+        actualizarTotal();
+    }
+
+    function actualizarTotal() {
+        let total = 0;
+        let items = 0;
+        document.querySelectorAll('.producto-card').forEach(card => {
+            const cantidad = parseInt(card.querySelector('.cantidad').textContent);
+            const precio = parseInt(card.dataset.precio);
+            total += cantidad * precio;
+            items += cantidad;
+        });
+        document.getElementById('total-precio').textContent = total.toLocaleString();
+        document.getElementById('total-items').textContent = items;
+    }
+</script>
+
+{% endblock %}

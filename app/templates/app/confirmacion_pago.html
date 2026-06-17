@@ -1,0 +1,48 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Confirmación - CineBio{% endblock %}
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+
+<div class="confirmacion-container">
+    <div class="confirmacion-check">✓</div>
+    <h1>¡Gracias por tu compra!</h1>
+    <p>Haz acumulado puntos socio, sigue accediendo a tus beneficios.</p>
+
+    <hr>
+
+    <div class="confirmacion-detalle">
+        <h2>Detalle de tu compra</h2>
+        <p><strong>Película:</strong> {{ compra.funcion.pelicula.nombre }}</p>
+        <p><strong>Fecha:</strong> {{ compra.funcion.fecha }}</p>
+        <p><strong>Hora:</strong> {{ compra.funcion.hora }}</p>
+        <p><strong>Sala:</strong> {{ compra.funcion.sala.nombre }}</p>
+
+        <h3>Butacas</h3>
+        {% for entrada in entradas %}
+        <p>{{ entrada.butaca.fila }}{{ entrada.butaca.numero }}</p>
+        {% endfor %}
+
+        {% if items %}
+        <h3>Confitería</h3>
+        {% for item in items %}
+        <p>{{ item.producto.nombre }} x{{ item.cantidad }}</p>
+        {% endfor %}
+        {% endif %}
+
+        <h2 class="total">Total: ${{ compra.total }}</h2>
+    </div>
+
+    <p>Hemos enviado tu detalle de compra a tu correo registrado.</p>
+
+    <a href="{% url 'listar_peliculas' %}" class="btn-comprar">Volver al inicio</a>
+</div>
+
+{% endblock %}

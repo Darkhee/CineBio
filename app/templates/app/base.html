@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}CineBio{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'app/css/styles.css' %}">
+</head>
+<body>
+
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+<div class="menu-lateral" id="menuLateral">
+    <div class="menu-header">
+        <h2>Menú</h2>
+        <button onclick="toggleMenu()">✕</button>
+    </div>
+    <nav class="menu-nav">
+        <a href="{% url 'listar_peliculas' %}"> Películas</a>
+        <a href="{% url 'confiteria' %}"> Confitería</a>
+        <a href="#"> Nosotros</a>
+        <a href="#"> Sucursales</a>
+    </nav>
+</div>
+
+<header>
+    <nav>
+        <button aria-label="Menú principal" onclick="toggleMenu()">☰</button>
+
+        {% block nav_centro %}
+        <div class="logo">
+            <h1>CineBio</h1>
+        </div>
+        {% endblock %}
+
+        <div class="perfil-usuario">
+            {% if user.is_authenticated %}
+                <a href="{% url 'perfil' %}" aria-label="Mi perfil">👤 {{ user.username }}</a>
+            {% else %}
+                <a href="{% url 'login' %}" aria-label="Iniciar sesión">👤</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<main>
+    {% block contenido %}
+    {% endblock %}
+</main>
+
+<footer>
+    <div class="footer-enlaces">
+        <ul>
+            <li><a href="#">Nosotros</a></li>
+            <li><a href="#">Sucursales</a></li>
+            <li><a href="#">Trabaja con nosotros</a></li>
+        </ul>
+    </div>
+    <div class="footer-horarios">
+        <h3>Horarios</h3>
+        <p>Lun. a miérc. de 12:30 a 23:00hrs</p>
+        <p>Jueves a domingo y festivos de 12:30 a 00:00hrs</p>
+    </div>
+    <div class="footer-redes">
+        <h3>Redes sociales</h3>
+        <div class="iconos-redes">
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="Facebook">FB</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('menuLateral');
+        const overlay = document.getElementById('menuOverlay');
+        menu.classList.toggle('abierto');
+        overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>

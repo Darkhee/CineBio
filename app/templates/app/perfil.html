@@ -1,0 +1,101 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Mi Perfil - CineBio{% endblock %}
+
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Películas</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
+{% block contenido %}
+<div class="perfil-container">
+
+    <div class="perfil-cards">
+        <div class="perfil-card">
+            <h2>{{ user.get_full_name|default:user.username|upper }}</h2>
+            {% if perfil %}
+            <p>RUT {{ perfil.rut }}</p>
+            <br>
+            <p><em>{{ perfil.get_categoria_display }}</em></p>
+            {% endif %}
+        </div>
+
+        <div class="perfil-card text-center">
+            <h3><em>Visitas</em></h3>
+            <div class="visitas-circulo">
+                <span class="visitas-año">2026</span>
+                <span class="visitas-numero">{{ perfil.visitas|default:0 }}</span>
+                <span>Visitas</span>
+            </div>
+            <p>+3 Visitas para subir a categoría Bio-Silver</p>
+        </div>
+
+        <div class="perfil-card text-center">
+            <h3><em>Puntos</em></h3>
+            <br>
+            <h2>{{ perfil.puntos|default:0 }}</h2>
+            <h3>Puntos Disponibles</h3>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="perfil-tabs">
+        <button class="tab-btn activo" onclick="mostrarTab('beneficios')">Beneficios</button>
+        <button class="tab-btn" onclick="mostrarTab('compras')">Mis compras</button>
+        <button class="tab-btn" onclick="mostrarTab('datos')">Datos personales</button>
+    </div>
+
+    <div id="beneficios" class="tab-content">
+        <div class="beneficios-grid">
+            <div class="beneficio-card">
+                <h3>🎟️ Beneficios entradas</h3>
+                <p><strong>Ticket Dual:</strong> 2 Entradas generales 2D por $5100</p>
+                <p><strong>Ticket puntos:</strong> Entrada general 2D por $2700 utilizando 2 Puntos</p>
+            </div>
+            <div class="beneficio-card">
+                <h3>🍿 Beneficios confitería</h3>
+                <p><strong>Combo Premium:</strong> Palomita gigante + 2 Bebestibles por $9500 utilizando 3 Puntos</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="compras" class="tab-content" style="display:none">
+        {% for compra in compras %}
+        <div class="compra-item">
+            <p><strong>{{ compra.funcion.pelicula.nombre }}</strong></p>
+            <p>{{ compra.funcion.fecha }} - {{ compra.funcion.hora }}</p>
+            <p>Total: ${{ compra.total }}</p>
+        </div>
+        {% empty %}
+        <p>No tienes compras registradas.</p>
+        {% endfor %}
+    </div>
+
+    <div id="datos" class="tab-content" style="display:none">
+        <div class="formulario-container">
+            <p><strong>Usuario:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Nombre:</strong> {{ user.get_full_name }}</p>
+            {% if perfil %}
+            <p><strong>RUT:</strong> {{ perfil.rut }}</p>
+            <p><strong>Teléfono:</strong> {{ perfil.telefono }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function mostrarTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+        document.getElementById(tab).style.display = 'block';
+        event.target.classList.add('activo');
+    }
+</script>
+
+{% endblock %}
