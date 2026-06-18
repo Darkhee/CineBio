@@ -1,7 +1,7 @@
 from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 from app.models import Pelicula, Funcion, ProductoConfiteria, Sala, Compra
@@ -14,7 +14,8 @@ from .forms import PeliculaAdminForm, FuncionAdminForm, ProductoAdminForm
 def admin_requerido(vista):
     @wraps(vista)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_staff:
+        # Autenticacion via sesion propia del portal — independiente del cine
+        if not request.session.get('portal_admin_uid'):
             return redirect('portal_admin:login')
         return vista(request, *args, **kwargs)
     return wrapper
@@ -24,17 +25,21 @@ def admin_requerido(vista):
 # Autenticación
 # ---------------------------------------------------------------------------
 def login_admin(request):
-    if request.user.is_authenticated and request.user.is_staff:
+    # Si ya tiene sesion de admin activa, redirigir al dashboard
+    if request.session.get('portal_admin_uid'):
         return redirect('portal_admin:dashboard')
 
     error = None
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
+        # Verificar credenciales sin crear sesion Django
         usuario = authenticate(request, username=username, password=password)
 
         if usuario is not None and usuario.is_staff:
-            login(request, usuario)
+            # Guardar en sesion PROPIA del portal (no afecta la sesion del cine)
+            request.session['portal_admin_uid']      = usuario.pk
+            request.session['portal_admin_username'] = usuario.username
             return redirect('portal_admin:dashboard')
         else:
             error = 'Credenciales incorrectas o sin permisos de administrador.'
@@ -43,7 +48,9 @@ def login_admin(request):
 
 
 def logout_admin(request):
-    logout(request)
+    # Limpiar solo la sesion del portal, sin afectar la sesion del cine
+    request.session.pop('portal_admin_uid', None)
+    request.session.pop('portal_admin_username', None)
     return redirect('portal_admin:login')
 
 
@@ -285,12 +292,8 @@ def butacas_sala_detalle(request, sala_id):
         # Todas las butacas de la sala
         todas = Butaca.objects.filter(sala=sala)
         for b in todas:
-            if b.estado in ('disponible', 'inhabilitada'):
-                if b.id in ids_inhabilitar:
-                    b.estado = 'inhabilitada'
-                else:
-                    b.estado = 'disponible'
-                b.save()
+            b.estado = 'inhabilitada' if b.id in ids_inhabilitar else 'disponible'
+            b.save()
         messages.success(request, f'Butacas de {sala.nombre} actualizadas.')
         return redirect('portal_admin:butacas_sala_detalle', sala_id=sala.pk)
 

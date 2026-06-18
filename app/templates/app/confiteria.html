@@ -23,11 +23,11 @@
     <div class="confiteria-main">
         <div class="categorias-tabs">
             {% for key, valor in categorias %}
-            <button class="tab-btn" onclick="filtrar('{{ key }}')">{{ valor }}</button>
+            <button class="tab-btn" data-cat="{{ key }}" onclick="filtrar('{{ key }}', this)">{{ valor }}</button>
             {% endfor %}
         </div>
 
-        <form method="POST" action="{% url 'pago' %}">
+        <form method="POST" action="{% url 'confiteria' %}">
             {% csrf_token %}
             <div class="productos-grid" id="productos">
                 {% for producto in productos %}
@@ -56,14 +56,26 @@
 </div>
 
 <script>
-    function filtrar(categoria) {
+    function filtrar(categoria, btnEl) {
         const productos = document.querySelectorAll('.producto-card');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('activo'));
-        event.target.classList.add('activo');
+        if (btnEl) btnEl.classList.add('activo');
         productos.forEach(p => {
             p.style.display = p.dataset.categoria === categoria ? 'block' : 'none';
         });
     }
+
+    // Arrancar en la pestaña "combo" al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnCombo = document.querySelector('.tab-btn[data-cat="combo"]');
+        if (btnCombo) {
+            filtrar('combo', btnCombo);
+        } else {
+            // fallback: primer tab disponible
+            const primer = document.querySelector('.tab-btn');
+            if (primer) primer.click();
+        }
+    });
 
     function cambiarCantidad(btn, delta) {
         const card = btn.closest('.producto-card');

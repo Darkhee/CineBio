@@ -5,18 +5,26 @@
 
 {% block contenido %}
 
-<section class="banner-destacado" {% if peliculas %}style="background-image: url('{{ peliculas.0.imagen.url }}');"{% endif %}>
+<section class="banner-destacado" id="mainBanner" {% if peliculas %}style="background-image: url('{{ peliculas.0.imagen.url }}'); transition: background-image 0.4s ease-in-out;"{% endif %}>
     <div class="contenido-banner">
         {% if peliculas %}
-        <h2>{{ peliculas.0.nombre }}</h2>
-        <button>Comprar</button>
+        <h2 id="bannerTitulo">{{ peliculas.0.nombre }}</h2>
+        <a href="{% url 'detalle_pelicula' peliculas.0.id %}" id="bannerLink">
+            <button type="button">Comprar</button>
+        </a>
         {% endif %}
     </div>
+    
     <div class="indicadores-carrusel">
-        <span class="indicador activo"></span>
-        <span class="indicador"></span>
-        <span class="indicador"></span>
-        <span class="indicador"></span>
+        {% for pelicula in peliculas|slice:":4" %}
+        <span class="indicador {% if forloop.first %}activo{% endif %}"
+              data-imagen="{% if pelicula.imagen %}{{ pelicula.imagen.url }}{% endif %}"
+              data-titulo="{{ pelicula.nombre }}"
+              data-link="{% url 'detalle_pelicula' pelicula.id %}"
+              onclick="cambiarBanner(this)"
+              style="cursor: pointer;">
+        </span>
+        {% endfor %}
     </div>
 </section>
 
@@ -65,5 +73,67 @@
         </article>
     </div>
 </section>
+
+<script>
+    // Variables globales para el control del carrusel
+    let indexActual = 0;
+    let intervaloBanner;
+    const TIEMPO_ROTACION = 5000; // Tiempo en milisegundos (5000ms = 5 segundos)
+
+    function cambiarBanner(elemento) {
+        const indicadores = Array.from(document.querySelectorAll('.indicadores-carrusel .indicador'));
+        
+        // 1. Quitamos la clase 'activo' de todas las barras
+        indicadores.forEach(ind => ind.classList.remove('activo'));
+
+        // 2. Se la agregamos a la barra seleccionada
+        elemento.classList.add('activo');
+
+        // 3. Actualizamos nuestro índice global para saber en cuál película estamos
+        indexActual = indicadores.indexOf(elemento);
+
+        // 4. Rescatamos los datos del elemento
+        const nuevaImagen = elemento.getAttribute('data-imagen');
+        const nuevoTitulo = elemento.getAttribute('data-titulo');
+        const nuevoLink = elemento.getAttribute('data-link');
+
+        // 5. Modificamos el banner en pantalla
+        const banner = document.getElementById('mainBanner');
+        if (nuevaImagen) {
+            banner.style.backgroundImage = `url('${nuevaImagen}')`;
+        }
+        document.getElementById('bannerTitulo').innerText = nuevoTitulo;
+        document.getElementById('bannerLink').href = nuevoLink;
+
+        // 6. ¡Clave! Reiniciamos el contador automático para evitar saltos dobles
+        reiniciarTemporizador();
+    }
+
+    // Función que calcula cuál es la siguiente película y simula el clic
+    function siguienteBanner() {
+        const indicadores = document.querySelectorAll('.indicadores-carrusel .indicador');
+        if (indicadores.length === 0) return;
+
+        // Avanza al siguiente índice. Si llega al final, vuelve a 0 usando el operador residuo (%)
+        indexActual = (indexActual + 1) % indicadores.length;
+        
+        // Ejecutamos la función principal pasando el siguiente indicador
+        cambiarBanner(indicadores[indexActual]);
+    }
+
+    function iniciarTemporizador() {
+        intervaloBanner = setInterval(siguienteBanner, TIEMPO_ROTACION);
+    }
+
+    function reiniciarTemporizador() {
+        clearInterval(intervaloBanner); // Borra el tiempo acumulado anterior
+        iniciarTemporizador();          // Inicia un nuevo conteo limpio de 5 segundos
+    }
+
+    // Arrancamos el carrusel automático inmediatamente cuando la página termine de cargar
+    document.addEventListener("DOMContentLoaded", function() {
+        iniciarTemporizador();
+    });
+</script>
 
 {% endblock %}

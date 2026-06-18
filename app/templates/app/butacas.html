@@ -32,13 +32,13 @@
             <div class="fila-butacas">
                 <span class="fila-letra">{{ fila }}</span>
                 {% for butaca in butacas %}
-                    {% if butaca.estado == 'disponible' %}
+                    {% if butaca.estado_vista == 'disponible' %}
                         <input type="checkbox" name="butacas" value="{{ butaca.id }}"
                                id="b{{ butaca.id }}" class="butaca-check"
                                data-label="{{ fila }}{{ butaca.numero }}">
                         <label for="b{{ butaca.id }}" class="butaca disponible"
                                title="{{ fila }}{{ butaca.numero }}"></label>
-                    {% elif butaca.estado == 'ocupada' %}
+                    {% elif butaca.estado_vista == 'ocupada' %}
                         <span class="butaca ocupada" title="{{ fila }}{{ butaca.numero }} — Ocupada"></span>
                     {% else %}
                         <span class="butaca inhabilitada" title="{{ fila }}{{ butaca.numero }} — Inhabilitada"></span>

@@ -7,15 +7,40 @@ class PerfilUsuario(models.Model):
         ('silver', 'SOCIO BIO-Silver'),
         ('gold', 'SOCIO BIO-Gold'),
     ]
+    TIPO_DOC_CHOICES = [
+        ('RUT', 'RUT'),
+        ('PASAPORTE', 'Pasaporte'),
+    ]
+    GENERO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Femenino'),
+    ]
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
-    rut = models.CharField(max_length=12)
+    # Documento
+    tipo_documento = models.CharField(max_length=20, choices=TIPO_DOC_CHOICES, default='RUT')
+    rut = models.CharField(max_length=20, verbose_name='Número de documento')
+    # Datos personales
+    nombre = models.CharField(max_length=100, blank=True)
+    apellido_paterno = models.CharField(max_length=100, blank=True)
+    apellido_materno = models.CharField(max_length=100, blank=True)
+    genero = models.CharField(max_length=1, choices=GENERO_CHOICES, blank=True)
+    fecha_nacimiento = models.DateField(null=True, blank=True)
+    # Contacto
     telefono = models.CharField(max_length=15, blank=True)
+    # Ubicacion
+    region = models.CharField(max_length=100, blank=True)
+    provincia = models.CharField(max_length=100, blank=True)
+    comuna = models.CharField(max_length=100, blank=True)
+    # Club
     visitas = models.IntegerField(default=0)
     puntos = models.FloatField(default=0)
     categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='estandar')
 
     def __str__(self):
         return f"Perfil de {self.usuario.username}"
+
+    def nombre_completo(self):
+        return f"{self.nombre} {self.apellido_paterno} {self.apellido_materno}".strip()
 
 
 class Pelicula(models.Model):
@@ -98,13 +123,26 @@ class ProductoConfiteria(models.Model):
 
 
 class Compra(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    funcion = models.ForeignKey(Funcion, on_delete=models.CASCADE)
+    # Usuario registrado (null si es invitado)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    funcion = models.ForeignKey(Funcion, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_compra = models.DateTimeField(auto_now_add=True)
     total = models.IntegerField(default=0)
+    # Datos de invitado (usados si usuario es null)
+    inv_tipo_doc  = models.CharField(max_length=20, blank=True, default='')
+    inv_documento = models.CharField(max_length=20, blank=True, default='')
+    inv_nombre    = models.CharField(max_length=100, blank=True, default='')
+    inv_apellido  = models.CharField(max_length=100, blank=True, default='')
+    inv_correo    = models.EmailField(blank=True, default='')
+
+    @property
+    def es_invitado(self):
+        return self.usuario is None
 
     def __str__(self):
-        return f"Compra {self.id} - {self.usuario}"
+        if self.usuario:
+            return f"Compra {self.id} - {self.usuario}"
+        return f"Compra {self.id} - Invitado ({self.inv_nombre})"
 
 
 class Entrada(models.Model):

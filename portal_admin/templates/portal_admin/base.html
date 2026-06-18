@@ -23,7 +23,7 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'portal_admin:dashboard' %}"
                    class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <span class="nav-icon">📊</span> Dashboard
+                    Dashboard
                 </a>
             </nav>
         </div>
@@ -33,15 +33,15 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'portal_admin:peliculas_list' %}"
                    class="{% if 'pelicula' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">🎬</span> Películas
+                    Películas
                 </a>
                 <a href="{% url 'portal_admin:funciones_list' %}"
                    class="{% if 'funcion' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">🕐</span> Funciones / Horarios
+                    Funciones / Horarios
                 </a>
                 <a href="{% url 'portal_admin:productos_list' %}"
                    class="{% if 'producto' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">🍿</span> Confitería
+                    Confitería
                 </a>
             </nav>
         </div>
@@ -51,7 +51,7 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'portal_admin:butacas_salas' %}"
                    class="{% if 'butaca' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">🏛️</span> Gestionar Butacas
+                    Gestionar Butacas
                 </a>
             </nav>
         </div>
@@ -61,20 +61,20 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'portal_admin:ventas_list' %}"
                    class="{% if 'ventas' in request.resolver_match.url_name %}active{% endif %}">
-                    <span class="nav-icon">🎟️</span> Ventas
+                    Ventas
                 </a>
             </nav>
         </div>
 
         <div class="sidebar-footer">
             <div class="sidebar-user">
-                <strong>{{ request.user.username }}</strong>
+                <strong>{{ admin_username }}</strong>
                 Administrador
             </div>
             <form method="post" action="{% url 'portal_admin:logout' %}">
                 {% csrf_token %}
                 <button type="submit" class="btn-logout">
-                    🚪 Cerrar sesión
+                    Cerrar sesión
                 </button>
             </form>
         </div>
@@ -96,7 +96,7 @@
             {% if messages %}
                 {% for msg in messages %}
                     <div class="alert alert-{% if msg.tags == 'success' %}success{% elif msg.tags == 'error' %}error{% else %}warning{% endif %}">
-                        {% if msg.tags == 'success' %}✅{% elif msg.tags == 'error' %}❌{% else %}⚠️{% endif %}
+                        
                         {{ msg }}
                     </div>
                 {% endfor %}

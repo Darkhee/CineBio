@@ -12,7 +12,7 @@
     <div class="card-header">
         <h2>{{ sala.nombre }}</h2>
         <div style="font-size:12px;color:var(--text-secondary);">
-            Haz clic en las butacas disponibles para inhabilitarlas o reactivarlas
+            Haz clic en un asiento para habilitarlo o inhabilitarlo
         </div>
     </div>
     <div class="card-body">
@@ -30,25 +30,17 @@
                     <span class="admin-fila-letra">{{ fila }}</span>
 
                     {% for butaca in butacas %}
-                        {% if butaca.estado == 'ocupada' %}
-                            <!-- Ocupada: no se puede cambiar -->
-                            <span class="admin-butaca ocupada" title="{{ fila }}{{ butaca.numero }} — Ocupada">
-                                {{ fila }}{{ butaca.numero }}
-                            </span>
-                        {% else %}
-                            <!-- Disponible / inhabilitada: toggleable -->
-                            <input type="checkbox"
-                                   name="butacas_inhabilitar"
-                                   value="{{ butaca.id }}"
-                                   id="ab{{ butaca.id }}"
-                                   class="admin-butaca-check"
-                                   {% if butaca.estado == 'inhabilitada' %}checked{% endif %}>
-                            <label for="ab{{ butaca.id }}"
-                                   class="admin-butaca {% if butaca.estado == 'inhabilitada' %}inhabilitada{% else %}disponible{% endif %}"
-                                   title="{{ fila }}{{ butaca.numero }}">
-                                {{ fila }}{{ butaca.numero }}
-                            </label>
-                        {% endif %}
+                        <input type="checkbox"
+                               name="butacas_inhabilitar"
+                               value="{{ butaca.id }}"
+                               id="ab{{ butaca.id }}"
+                               class="admin-butaca-check"
+                               {% if butaca.estado == 'inhabilitada' %}checked{% endif %}>
+                        <label for="ab{{ butaca.id }}"
+                               class="admin-butaca {% if butaca.estado == 'inhabilitada' %}inhabilitada{% else %}disponible{% endif %}"
+                               title="{{ fila }}{{ butaca.numero }}">
+                            {{ fila }}{{ butaca.numero }}
+                        </label>
                     {% endfor %}
 
                     <span class="admin-fila-letra">{{ fila }}</span>
@@ -58,21 +50,20 @@
 
             <!-- Leyenda -->
             <div class="admin-leyenda">
-                <span><span class="admin-butaca disponible mini"></span> Disponible</span>
+                <span><span class="admin-butaca disponible mini"></span> Habilitada</span>
                 <span><span class="admin-butaca inhabilitada mini"></span> Inhabilitada</span>
-                <span><span class="admin-butaca ocupada mini"></span> Ocupada (no editable)</span>
             </div>
 
             <!-- Footer con resumen y guardar -->
             <div class="admin-butacas-footer">
                 <div class="resumen-inhabilitar">
-                    Inhabilitadas seleccionadas:
+                    Inhabilitadas:
                     <strong id="contador-inhabilitar">0</strong>
                     <span id="lista-inhabilitar" style="font-size:12px; color:var(--text-secondary); margin-left:8px;"></span>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <a href="{% url 'portal_admin:butacas_salas' %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </div>
         </form>
@@ -147,8 +138,12 @@
     background: #fff5f5;
     color: var(--accent);
 }
+.admin-butaca-check:not(:checked) + .admin-butaca.inhabilitada {
+    background: #fff !important;
+    border-color: #d1d5db !important;
+    color: #6b7280 !important;
+}
 
-/* Cuando el checkbox está marcado → inhabilitada visualmente */
 .admin-butaca-check:checked + .admin-butaca {
     background: #3498db !important;
     border-color: #2980b9 !important;
@@ -159,14 +154,6 @@
     background: #3498db;
     border: 2px solid #2980b9;
     color: #fff;
-}
-
-.admin-butaca.ocupada {
-    background: #e74c3c;
-    border: 2px solid #c0392b;
-    color: #fff;
-    cursor: not-allowed;
-    font-size: 9px;
 }
 
 .admin-butaca.mini {
@@ -223,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (seleccionados.length === 0) {
             lista.textContent = '';
         } else {
-            // Get seat label from the label element's title attribute
             const nombres = seleccionados.map(c => {
                 const lbl = document.querySelector(`label[for="${c.id}"]`);
                 return lbl ? lbl.getAttribute('title') : '';
@@ -233,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     checks.forEach(c => c.addEventListener('change', actualizar));
-    actualizar(); // run on load to show already-disabled seats
+    actualizar();
 });
 </script>
 

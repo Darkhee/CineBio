@@ -16,14 +16,14 @@
             {% for sala in salas %}
             <a href="{% url 'portal_admin:butacas_sala_detalle' sala.pk %}" style="text-decoration:none;">
                 <div class="sala-card">
-                    <div class="sala-icon">🏛️</div>
+                    
                     <div class="sala-nombre">{{ sala.nombre }}</div>
                     <div class="sala-detalle">
                         {% with total=sala.butaca_set.count %}
                         {{ total }} butaca{{ total|pluralize }}
                         {% endwith %}
                     </div>
-                    <div class="sala-accion">Gestionar butacas →</div>
+                    <div class="sala-accion">Gestionar butacas</div>
                 </div>
             </a>
             {% endfor %}

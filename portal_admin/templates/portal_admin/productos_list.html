@@ -10,7 +10,7 @@
     <div class="card-header">
         <h2>Productos ({{ productos|length }})</h2>
         <a href="{% url 'portal_admin:producto_create' %}" class="btn btn-primary">
-            ＋ Nuevo Producto
+            Nuevo Producto
         </a>
     </div>
 
@@ -46,9 +46,9 @@
                     <td>
                         <div class="actions-cell">
                             <a href="{% url 'portal_admin:producto_edit' producto.pk %}"
-                               class="btn btn-warning btn-sm">✏️ Editar</a>
+                               class="btn btn-warning btn-sm">Editar</a>
                             <a href="{% url 'portal_admin:producto_delete' producto.pk %}"
-                               class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                               class="btn btn-danger btn-sm">Eliminar</a>
                         </div>
                     </td>
                 </tr>
@@ -57,7 +57,7 @@
         </table>
         {% else %}
         <div class="empty-state">
-            <div class="empty-icon">🍿</div>
+            
             <p>No hay productos registrados.<br>
                <a href="{% url 'portal_admin:producto_create' %}" style="color:var(--accent);">Agregar el primero</a>
             </p>

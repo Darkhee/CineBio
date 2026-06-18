@@ -7,16 +7,16 @@
 {% block contenido %}
 
 <!-- Resumen -->
-<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); margin-bottom:24px;">
+<div class="stats-grid" style="margin-bottom:24px;">
     <div class="stat-card">
-        <div class="stat-icon purple">🎟️</div>
+        <div class="stat-icon purple"></div>
         <div class="stat-info">
             <div class="stat-value">{{ compras|length }}</div>
             <div class="stat-label">Compras totales</div>
         </div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon green">💰</div>
+        <div class="stat-icon green"></div>
         <div class="stat-info">
             <div class="stat-value">${{ total_recaudado|floatformat:"0" }}</div>
             <div class="stat-label">Total recaudado (CLP)</div>
@@ -36,10 +36,11 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Cliente</th>
-                    <th>Película</th>
+                    <th>Tipo de cliente</th>
+                    <th>Documento</th>
+                    <th>Nombre completo</th>
+                    <th>Película / Función</th>
                     <th>Sala</th>
-                    <th>Fecha función</th>
                     <th>Butacas</th>
                     <th>Confitería</th>
                     <th>Fecha compra</th>
@@ -49,32 +50,77 @@
             <tbody>
                 {% for compra in compras %}
                 <tr>
-                    <td style="color:var(--text-secondary); font-weight:600;">#{{ compra.id }}</td>
+                    <td style="color:var(--text-secondary);font-weight:600;">#{{ compra.id }}</td>
+
+                    <!-- Tipo de cliente -->
+                    {% with perfil=compra.usuario.perfilusuario %}
                     <td>
-                        <strong>{{ compra.usuario.username }}</strong><br>
-                        <span style="font-size:11px;color:var(--text-secondary);">{{ compra.usuario.email }}</span>
+                        {% if perfil %}
+                            <span class="badge badge-2d">Registrado</span>
+                        {% else %}
+                            <span class="badge badge-palomitas">Invitado</span>
+                        {% endif %}
                     </td>
-                    <td>{{ compra.funcion.pelicula.nombre }}</td>
+
+                    <!-- Documento (solo socios) -->
+                    <td>
+                        {% if perfil %}
+                            <span style="font-size:11px;color:var(--text-secondary);">{{ perfil.tipo_documento }}</span><br>
+                            <strong>{{ perfil.rut }}</strong>
+                        {% else %}
+                            <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Nombre completo (solo socios) -->
+                    <td>
+                        {% if perfil %}
+                            <strong>{{ perfil.nombre }} {{ perfil.apellido_paterno }}</strong>
+                            {% if perfil.apellido_materno %}
+                                {{ perfil.apellido_materno }}
+                            {% endif %}
+                            <br>
+                            <span style="font-size:11px;color:var(--text-secondary);">{{ compra.usuario.email }}</span>
+                        {% else %}
+                            <span style="color:var(--text-secondary);font-size:12px;">{{ compra.usuario.username }}</span>
+                        {% endif %}
+                    </td>
+                    {% endwith %}
+
+                    <!-- Película / Función -->
+                    <td>
+                        <strong>{{ compra.funcion.pelicula.nombre }}</strong><br>
+                        <span style="font-size:11px;color:var(--text-secondary);">
+                            {{ compra.funcion.fecha }} — {{ compra.funcion.hora|time:"H:i" }}
+                        </span>
+                    </td>
+
                     <td>{{ compra.funcion.sala.nombre }}</td>
-                    <td>
-                        {{ compra.funcion.fecha }}<br>
-                        <span style="font-size:11px;color:var(--text-secondary);">{{ compra.funcion.hora|time:"H:i" }} hrs</span>
-                    </td>
+
+                    <!-- Butacas -->
                     <td>
                         {% for entrada in compra.entrada_set.all %}
-                            <span class="badge badge-2d" style="margin:1px;">{{ entrada.butaca.fila }}{{ entrada.butaca.numero }}</span>
+                            <span class="badge badge-2d" style="margin:1px;">
+                                {{ entrada.butaca.fila }}{{ entrada.butaca.numero }}
+                            </span>
                         {% empty %}
                             <span style="color:var(--text-secondary);font-size:12px;">—</span>
                         {% endfor %}
                     </td>
+
+                    <!-- Confitería -->
                     <td>
                         {% for item in compra.itemconfiteria_set.all %}
-                            <span style="font-size:12px;display:block;">{{ item.producto.nombre }} ×{{ item.cantidad }}</span>
+                            <span style="font-size:12px;display:block;">
+                                {{ item.producto.nombre }} x{{ item.cantidad }}
+                            </span>
                         {% empty %}
                             <span style="color:var(--text-secondary);font-size:12px;">Sin confitería</span>
                         {% endfor %}
                     </td>
+
                     <td style="font-size:12px;">{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+
                     <td>
                         <strong style="color:var(--success);">${{ compra.total|floatformat:"0" }}</strong>
                     </td>
@@ -84,7 +130,6 @@
         </table>
         {% else %}
         <div class="empty-state">
-            <div class="empty-icon">🎟️</div>
             <p>No hay ventas registradas aún.</p>
         </div>
         {% endif %}

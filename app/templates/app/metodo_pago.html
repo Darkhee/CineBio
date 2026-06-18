@@ -1,0 +1,172 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Pago - CineBio{% endblock %}
+{% block nav_centro %}
+<div style="font-size:17px; font-weight:700; letter-spacing:.5px;">Pago</div>
+{% endblock %}
+
+{% block contenido %}
+<div class="butacas-container">
+
+    <!-- Panel izquierdo: resumen de compra -->
+    <div class="butacas-info">
+        {% if compra.funcion %}
+            {% if compra.funcion.pelicula.imagen %}
+                <img src="{{ compra.funcion.pelicula.imagen.url }}"
+                     alt="{{ compra.funcion.pelicula.nombre }}">
+            {% endif %}
+            <h2>{{ compra.funcion.pelicula.nombre }}<br>
+                <small>{{ compra.funcion.get_tipo_display }}</small>
+            </h2>
+            <p>Hoy {{ compra.funcion.fecha }}</p>
+            <p>{{ compra.funcion.hora|time:"H:i" }}hrs</p>
+            <p><strong>{{ compra.funcion.sala.nombre }}</strong></p>
+            <hr style="margin:12px 0; border-color:#ccc;">
+            <p><strong>Butacas: {{ entradas|length }}</strong></p>
+            <p><strong>Entradas: {{ entradas|length }}</strong></p>
+        {% else %}
+            <div style="font-size:40px; margin-bottom:12px;">🍿</div>
+            <h2>Solo Confitería</h2>
+        {% endif %}
+
+        {% if items %}
+            <p style="margin-top:8px;"><strong>Confitería:</strong></p>
+            {% for item in items %}
+                <p style="font-size:13px;">{{ item.producto.nombre }} x{{ item.cantidad }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <hr style="margin:12px 0; border-color:#ccc;">
+        <p><strong>Total: ${{ compra.total|floatformat:"0" }}</strong></p>
+    </div>
+
+    <!-- Panel derecho: método de pago -->
+    <div class="butacas-sala" style="display:flex; align-items:center; justify-content:center;">
+        <div class="metodo-pago-card">
+            <h3>Método de pago</h3>
+
+            {% if error %}
+                <p class="metodo-error">{{ error }}</p>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label class="metodo-opcion">
+                    <input type="radio" name="metodo" value="mercadopago" required>
+                    <span class="metodo-label">
+                        <span class="metodo-nombre">Mercado Pago</span>
+                        <span class="metodo-logo metodo-mp">mercado<br>pago</span>
+                    </span>
+                </label>
+
+                <label class="metodo-opcion">
+                    <input type="radio" name="metodo" value="transbank">
+                    <span class="metodo-label">
+                        <span class="metodo-nombre">Transbank</span>
+                        <span class="metodo-logo metodo-wp">webpay<strong>PLUS</strong></span>
+                    </span>
+                </label>
+
+                <div style="text-align:right; margin-top:20px;">
+                    <button type="submit" class="btn-continuar">Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.metodo-pago-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.10);
+}
+
+.metodo-pago-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #2d2014;
+}
+
+.metodo-opcion {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid #e0dbd6;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+
+.metodo-opcion:has(input:checked) {
+    border-color: #52413f;
+}
+
+.metodo-opcion input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #52413f;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.metodo-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.metodo-nombre {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.metodo-logo {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.metodo-mp {
+    background: #009ee3;
+    color: #fff;
+}
+
+.metodo-wp {
+    background: #fff;
+    color: #00a0df;
+    border: 1.5px solid #00a0df;
+    font-size: 11px;
+}
+
+.metodo-wp strong {
+    display: block;
+    font-size: 9px;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.metodo-error {
+    color: #c0392b;
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+</style>
+
+{% endblock %}

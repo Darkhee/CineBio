@@ -35,10 +35,28 @@
         {% endblock %}
 
         <div class="perfil-usuario">
-            {% if user.is_authenticated %}
-                <a href="{% url 'perfil' %}" aria-label="Mi perfil">👤 {{ user.username }}</a>
+            {% if user.is_authenticated and not user.is_staff %}
+                <div class="perfil-dropdown" id="perfilDropdown">
+                    <button class="perfil-trigger" onclick="togglePerfil(event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        {{ user.first_name|default:user.username }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="perfil-menu" id="perfilMenu">
+                        <a href="{% url 'perfil' %}" class="perfil-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Ir a mi Perfil
+                        </a>
+                        <a href="{% url 'logout' %}" class="perfil-menu-item perfil-menu-logout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
             {% else %}
-                <a href="{% url 'login' %}" aria-label="Iniciar sesión">👤</a>
+                <a href="{% url 'login' %}" aria-label="Iniciar sesión">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </a>
             {% endif %}
         </div>
     </nav>
@@ -80,5 +98,63 @@
     }
 </script>
 
+<style>
+.perfil-dropdown { position: relative; }
+
+.perfil-trigger {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+.perfil-trigger:hover { background: rgba(255,255,255,.12); }
+
+.perfil-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #52413f;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    min-width: 190px;
+    z-index: 999;
+    overflow: hidden;
+}
+.perfil-menu.abierto { display: block; }
+
+.perfil-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background .15s;
+}
+.perfil-menu-item:hover { background: rgba(255,255,255,.15); }
+
+.perfil-menu-logout { color: #fff; }
+.perfil-menu-logout:hover { background: rgba(255,255,255,.15); }
+</style>
+
+<script>
+function togglePerfil(e) {
+    e.stopPropagation();
+    document.getElementById('perfilMenu').classList.toggle('abierto');
+}
+document.addEventListener('click', function() {
+    const m = document.getElementById('perfilMenu');
+    if (m) m.classList.remove('abierto');
+});
+</script>
 </body>
 </html>

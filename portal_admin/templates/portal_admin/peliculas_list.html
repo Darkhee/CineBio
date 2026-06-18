@@ -10,7 +10,7 @@
     <div class="card-header">
         <h2>Listado de Películas ({{ peliculas|length }})</h2>
         <a href="{% url 'portal_admin:pelicula_create' %}" class="btn btn-primary">
-            ＋ Nueva Película
+            Nueva Película
         </a>
     </div>
 
@@ -48,9 +48,9 @@
                     <td>
                         <div class="actions-cell">
                             <a href="{% url 'portal_admin:pelicula_edit' pelicula.pk %}"
-                               class="btn btn-warning btn-sm">✏️ Editar</a>
+                               class="btn btn-warning btn-sm">Editar</a>
                             <a href="{% url 'portal_admin:pelicula_delete' pelicula.pk %}"
-                               class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                               class="btn btn-danger btn-sm">Eliminar</a>
                         </div>
                     </td>
                 </tr>
@@ -59,7 +59,7 @@
         </table>
         {% else %}
         <div class="empty-state">
-            <div class="empty-icon">🎬</div>
+            
             <p>No hay películas registradas.<br>
                <a href="{% url 'portal_admin:pelicula_create' %}" style="color:var(--accent);">Agregar la primera</a>
             </p>

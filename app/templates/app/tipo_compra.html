@@ -1,0 +1,179 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}Tipo de Compra - CineBio{% endblock %}
+{% block nav_centro %}{% endblock %}
+
+{% block contenido %}
+
+<div class="tipo-compra-page">
+
+    <div class="tipo-compra-card">
+        <h2>¿Cómo deseas continuar?</h2>
+        <p>
+            <strong>{{ funcion.pelicula.nombre }}</strong> —
+            {{ funcion.fecha }} {{ funcion.hora|time:"H:i" }} hrs ·
+            {{ funcion.sala.nombre }} ·
+            {{ cantidad_butacas }} butaca{{ cantidad_butacas|pluralize }}
+        </p>
+
+        <div class="tipo-compra-opciones">
+
+            <!-- Opción 1: usuario registrado -->
+            <div class="tipo-opcion">
+                <div class="tipo-opcion-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <h3>¿Ya tienes cuenta?</h3>
+                <p>Inicia sesión para comprar con tu cuenta de socio y acumular puntos.</p>
+                <a href="{% url 'login' %}?next={% if tiene_items %}{% url 'pago' %}{% else %}{% url 'confiteria' %}{% endif %}" class="btn-tipo btn-registrado">
+                    Iniciar sesión
+                </a>
+            </div>
+
+            <div class="tipo-separador">o</div>
+
+            <!-- Opción 2: invitado -->
+            <div class="tipo-opcion">
+                <div class="tipo-opcion-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <h3>Comprar como invitado</h3>
+                <p>Compra sin crear una cuenta, solo con tus datos básicos.</p>
+                <a href="{% url 'datos_invitado' %}" class="btn-tipo btn-invitado">
+                    Continuar como invitado
+                </a>
+            </div>
+
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <a href="javascript:history.back()" style="font-size:13px; color:#888; text-decoration:underline;">
+                Volver a selección de butacas
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.tipo-compra-page {
+    min-height: calc(100vh - 70px);
+    background: #e8e5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.tipo-compra-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 44px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 4px 30px rgba(0,0,0,.10);
+    text-align: center;
+}
+
+.tipo-compra-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2d2014;
+    margin-bottom: 8px;
+}
+
+.tipo-compra-card > p {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 36px;
+}
+
+.tipo-compra-opciones {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.tipo-opcion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 24px;
+    border: 1.5px solid #e0dbd6;
+    border-radius: 12px;
+    background: #faf9f8;
+    gap: 10px;
+}
+
+.tipo-opcion-icon {
+    color: #52413f;
+    margin-bottom: 4px;
+}
+
+.tipo-opcion h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d2014;
+}
+
+.tipo-opcion p {
+    font-size: 12.5px;
+    color: #888;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.tipo-separador {
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 14px;
+    color: #bbb;
+    font-weight: 500;
+}
+
+.btn-tipo {
+    display: inline-block;
+    padding: 11px 28px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 8px;
+    transition: all .18s;
+    font-family: inherit;
+}
+
+.btn-registrado {
+    background: #52413f;
+    color: #fff;
+}
+.btn-registrado:hover { background: #3a2e2c; }
+
+.btn-invitado {
+    background: transparent;
+    color: #52413f;
+    border: 2px solid #52413f;
+}
+.btn-invitado:hover { background: #52413f; color: #fff; }
+
+@media (max-width: 560px) {
+    .tipo-compra-opciones { flex-direction: column; }
+    .tipo-separador { padding: 12px 0; }
+    .tipo-compra-card { padding: 28px 20px; }
+}
+</style>
+
+{% endblock %}

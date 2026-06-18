@@ -1,25 +1,323 @@
 {% extends 'app/base.html' %}
+{% load static %}
 
 {% block titulo %}Registro - CineBio{% endblock %}
-{% block nav_centro %}
-<div class="nav-links">
-    <a href="{% url 'listar_peliculas' %}">Películas</a>
-    <a href="{% url 'confiteria' %}">Confitería</a>
-</div>
-{% endblock %}
+
+{% block nav_centro %}{% endblock %}
 
 {% block contenido %}
 
-<div class="formulario-container">
-    <h1>Únete a nuestro club de socio</h1>
+<div class="registro-page">
+    <div class="registro-card">
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ formulario.as_p }}
-        <button type="submit">Unirme</button>
-    </form>
+        <div class="registro-card-header">
+            <h1>Únete a nuestro club de socio</h1>
+            <p>Completa tus datos y accede<br>a nuestros beneficios</p>
+        </div>
 
-    <a href="{% url 'login' %}">¿Ya tienes cuenta? Inicia sesión</a>
+        <form method="POST" id="form-registro">
+            {% csrf_token %}
+
+            <div class="registro-grid">
+
+                <!-- Columna izquierda -->
+                <div class="registro-col">
+
+                    <div class="registro-field">
+                        <select name="tipo_documento" class="reg-input reg-select" required>
+                            <option value="" disabled selected>Tipo de documento</option>
+                            <option value="RUT" {% if formulario.tipo_documento.value == 'RUT' %}selected{% endif %}>RUT</option>
+                            <option value="PASAPORTE" {% if formulario.tipo_documento.value == 'PASAPORTE' %}selected{% endif %}>Pasaporte</option>
+                        </select>
+                        {% if errores.tipo_documento %}<span class="reg-error">{{ errores.tipo_documento }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="email" name="correo" class="reg-input" placeholder="Correo electrónico"
+                               value="{{ formulario.correo.value|default:'' }}" required>
+                        {% if errores.correo %}<span class="reg-error">{{ errores.correo }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="apellido_paterno" class="reg-input" placeholder="Apellido Paterno"
+                               value="{{ formulario.apellido_paterno.value|default:'' }}" required>
+                        {% if errores.apellido_paterno %}<span class="reg-error">{{ errores.apellido_paterno }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="password" name="contrasena" class="reg-input" placeholder="Contraseña" required>
+                        {% if errores.contrasena %}<span class="reg-error">{{ errores.contrasena }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="date" name="fecha_nacimiento" class="reg-input" placeholder="Fecha de nacimiento"
+                               value="{{ formulario.fecha_nacimiento.value|default:'' }}" required>
+                        {% if errores.fecha_nacimiento %}<span class="reg-error">{{ errores.fecha_nacimiento }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="region" class="reg-input" placeholder="Region"
+                               value="{{ formulario.region.value|default:'' }}" required>
+                        {% if errores.region %}<span class="reg-error">{{ errores.region }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="comuna" class="reg-input" placeholder="Comuna"
+                               value="{{ formulario.comuna.value|default:'' }}" required>
+                        {% if errores.comuna %}<span class="reg-error">{{ errores.comuna }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="registro-col">
+
+                    <div class="registro-field">
+                        <input type="text" name="rut" class="reg-input" placeholder="Número de RUT"
+                               value="{{ formulario.rut.value|default:'' }}" required>
+                        {% if errores.rut %}<span class="reg-error">{{ errores.rut }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="nombre" class="reg-input" placeholder="Nombre"
+                               value="{{ formulario.nombre.value|default:'' }}" required>
+                        {% if errores.nombre %}<span class="reg-error">{{ errores.nombre }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="apellido_materno" class="reg-input" placeholder="Apellido Materno"
+                               value="{{ formulario.apellido_materno.value|default:'' }}" required>
+                        {% if errores.apellido_materno %}<span class="reg-error">{{ errores.apellido_materno }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="password" name="confirmar_contrasena" class="reg-input" placeholder="Confirmar contraseña" required>
+                        {% if errores.confirmar_contrasena %}<span class="reg-error">{{ errores.confirmar_contrasena }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="tel" name="celular" class="reg-input" placeholder="Número de celular"
+                               value="{{ formulario.celular.value|default:'' }}" required>
+                        {% if errores.celular %}<span class="reg-error">{{ errores.celular }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <input type="text" name="provincia" class="reg-input" placeholder="Provincia"
+                               value="{{ formulario.provincia.value|default:'' }}" required>
+                        {% if errores.provincia %}<span class="reg-error">{{ errores.provincia }}</span>{% endif %}
+                    </div>
+
+                    <div class="registro-field">
+                        <label class="reg-label-grupo">Género</label>
+                        <div class="reg-radio-grupo">
+                            <label class="reg-radio-opcion">
+                                <input type="radio" name="genero" value="M"
+                                       {% if formulario.genero.value == 'M' %}checked{% endif %}>
+                                Masculino
+                            </label>
+                            <label class="reg-radio-opcion">
+                                <input type="radio" name="genero" value="F"
+                                       {% if formulario.genero.value == 'F' %}checked{% endif %}>
+                                Femenino
+                            </label>
+                        </div>
+                        {% if errores.genero %}<span class="reg-error">{{ errores.genero }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Términos -->
+            <div class="registro-terminos">
+                <label class="reg-checkbox-label">
+                    <input type="checkbox" name="acepto_terminos" required>
+                    Acepto términos y condiciones
+                </label>
+                {% if errores.acepto_terminos %}<span class="reg-error">{{ errores.acepto_terminos }}</span>{% endif %}
+            </div>
+
+            <!-- Botón fuera de la card -->
+            <div class="registro-btn-wrap">
+                <button type="submit" class="btn-unirme">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Unirme
+                </button>
+            </div>
+        </form>
+
+    </div>
 </div>
+
+<style>
+.registro-page {
+    min-height: calc(100vh - 70px);
+    background: #e8e5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.registro-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 36px 40px 28px;
+    width: 100%;
+    max-width: 780px;
+    box-shadow: 0 4px 30px rgba(0,0,0,.10);
+}
+
+.registro-card-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.registro-card-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2d2014;
+    margin-bottom: 6px;
+}
+
+.registro-card-header p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+}
+
+.registro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
+}
+
+.registro-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.registro-field {
+    margin-bottom: 10px;
+}
+
+.reg-input,
+.reg-select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid #bbb;
+    padding: 10px 4px 6px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    transition: border-color .2s;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.reg-input:focus,
+.reg-select:focus {
+    border-bottom-color: #52413f;
+}
+
+.reg-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+}
+
+.reg-label-grupo {
+    font-size: 12px;
+    color: #888;
+    display: block;
+    padding-top: 10px;
+    padding-left: 4px;
+}
+
+.reg-radio-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    padding-left: 4px;
+}
+
+.reg-radio-opcion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+}
+
+.reg-radio-opcion input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #52413f;
+    cursor: pointer;
+}
+
+.registro-terminos {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.reg-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #555;
+    cursor: pointer;
+}
+
+.reg-checkbox-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #52413f;
+    cursor: pointer;
+}
+
+.reg-error {
+    display: block;
+    font-size: 11px;
+    color: #c0392b;
+    margin-top: 3px;
+    padding-left: 4px;
+}
+
+.registro-btn-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.btn-unirme {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 40px;
+    background: #52413f;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: background .2s;
+}
+
+.btn-unirme:hover { background: #3a2e2c; }
+
+@media (max-width: 600px) {
+    .registro-grid { grid-template-columns: 1fr; }
+    .registro-card { padding: 28px 20px; }
+}
+</style>
 
 {% endblock %}
