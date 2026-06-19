@@ -1,4 +1,4 @@
-{% extends 'portal_admin/base.html' %}
+{{% extends 'portal_admin/base.html' %}
 
 {% block titulo %}Ventas — CineBio Admin{% endblock %}
 {% block page_title %}Ventas{% endblock %}
@@ -9,14 +9,14 @@
 <!-- Resumen -->
 <div class="stats-grid" style="margin-bottom:24px;">
     <div class="stat-card">
-        <div class="stat-icon purple"></div>
+        <div class="stat-icon purple"><i class="fa-solid fa-ticket"></i></div>
         <div class="stat-info">
             <div class="stat-value">{{ compras|length }}</div>
             <div class="stat-label">Compras totales</div>
         </div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon green"></div>
+        <div class="stat-icon green"><i class="fa-solid fa-dollar-sign"></i></div>
         <div class="stat-info">
             <div class="stat-value">${{ total_recaudado|floatformat:"0" }}</div>
             <div class="stat-label">Total recaudado (CLP)</div>
@@ -52,50 +52,63 @@
                 <tr>
                     <td style="color:var(--text-secondary);font-weight:600;">#{{ compra.id }}</td>
 
-                    <!-- Tipo de cliente -->
-                    {% with perfil=compra.usuario.perfilusuario %}
+                    {% if compra.usuario %}
+                        {% with perfil=compra.usuario.perfilusuario %}
+                        <td>
+                            {% if perfil %}
+                                <span class="badge badge-2d">Registrado</span>
+                            {% else %}
+                                <span class="badge badge-palomitas">Sin perfil</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if perfil %}
+                                <span style="font-size:11px;color:var(--text-secondary);">{{ perfil.tipo_documento }}</span><br>
+                                <strong>{{ perfil.rut }}</strong>
+                            {% else %}
+                                <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if perfil %}
+                                <strong>{{ perfil.nombre }} {{ perfil.apellido_paterno }}{% if perfil.apellido_materno %} {{ perfil.apellido_materno }}{% endif %}</strong><br>
+                                <span style="font-size:11px;color:var(--text-secondary);">{{ compra.usuario.email }}</span>
+                            {% else %}
+                                <span style="color:var(--text-secondary);font-size:12px;">{{ compra.usuario.username }}</span>
+                            {% endif %}
+                        </td>
+                        {% endwith %}
+                    {% else %}
+                        <td><span class="badge badge-palomitas">Invitado</span></td>
+                        <td>
+                            <span style="font-size:11px;color:var(--text-secondary);">{{ compra.inv_tipo_doc }}</span><br>
+                            <strong>{{ compra.inv_documento }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ compra.inv_nombre }} {{ compra.inv_apellido }}</strong><br>
+                            <span style="font-size:11px;color:var(--text-secondary);">{{ compra.inv_correo }}</span>
+                        </td>
+                    {% endif %}
+
+                    <!-- Película / Función -->
                     <td>
-                        {% if perfil %}
-                            <span class="badge badge-2d">Registrado</span>
+                        {% if compra.funcion %}
+                            <strong>{{ compra.funcion.pelicula.nombre }}</strong><br>
+                            <span style="font-size:11px;color:var(--text-secondary);">
+                                {{ compra.funcion.fecha }} — {{ compra.funcion.hora|time:"H:i" }}
+                            </span>
                         {% else %}
-                            <span class="badge badge-palomitas">Invitado</span>
+                            <span style="color:var(--text-secondary);font-size:12px;">Solo confitería</span>
                         {% endif %}
                     </td>
 
-                    <!-- Documento (solo socios) -->
                     <td>
-                        {% if perfil %}
-                            <span style="font-size:11px;color:var(--text-secondary);">{{ perfil.tipo_documento }}</span><br>
-                            <strong>{{ perfil.rut }}</strong>
+                        {% if compra.funcion %}
+                            {{ compra.funcion.sala.nombre }}
                         {% else %}
                             <span style="color:var(--text-secondary);font-size:12px;">—</span>
                         {% endif %}
                     </td>
-
-                    <!-- Nombre completo (solo socios) -->
-                    <td>
-                        {% if perfil %}
-                            <strong>{{ perfil.nombre }} {{ perfil.apellido_paterno }}</strong>
-                            {% if perfil.apellido_materno %}
-                                {{ perfil.apellido_materno }}
-                            {% endif %}
-                            <br>
-                            <span style="font-size:11px;color:var(--text-secondary);">{{ compra.usuario.email }}</span>
-                        {% else %}
-                            <span style="color:var(--text-secondary);font-size:12px;">{{ compra.usuario.username }}</span>
-                        {% endif %}
-                    </td>
-                    {% endwith %}
-
-                    <!-- Película / Función -->
-                    <td>
-                        <strong>{{ compra.funcion.pelicula.nombre }}</strong><br>
-                        <span style="font-size:11px;color:var(--text-secondary);">
-                            {{ compra.funcion.fecha }} — {{ compra.funcion.hora|time:"H:i" }}
-                        </span>
-                    </td>
-
-                    <td>{{ compra.funcion.sala.nombre }}</td>
 
                     <!-- Butacas -->
                     <td>

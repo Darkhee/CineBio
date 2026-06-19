@@ -1,20 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* ============================================================
-   Variables
-   ============================================================ */
 :root {
-    --sidebar-bg:      #12121f;
-    --sidebar-hover:   #1e1e35;
-    --sidebar-active:  #c0392b;
-    --sidebar-text:    #9ca3c5;
+    --sidebar-bg:      #52413f;
+    --sidebar-hover:   #6b5553;
+    --sidebar-active:  #8b7977;
+    --sidebar-text:    #e8d8d6;
     --sidebar-width:   240px;
     --header-h:        64px;
-    --accent:          #c0392b;
-    --accent-light:    #e74c3c;
-    --body-bg:         #f0f2f8;
+    --accent:          #52413f;
+    --accent-light:    #6b5553;
+    --body-bg:         #f5f2f0;
     --card-bg:         #ffffff;
-    --text-primary:    #1e2130;
+    --text-primary:    #2d1f1e;
     --text-secondary:  #6b7280;
     --border:          #e5e7ef;
     --success:         #27ae60;
@@ -25,31 +22,25 @@
     --shadow:          0 2px 12px rgba(0,0,0,.07);
 }
 
-/* ============================================================
-   Reset
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Poppins', sans-serif;
     background: var(--body-bg);
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 img { max-width: 100%; display: block; }
 
-/* ============================================================
-   LOGIN PAGE
-   ============================================================ */
 .login-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #12121f 0%, #1e1e35 60%, #2c1b30 100%);
+    background: #52413f;
 }
 
 .login-card {
@@ -67,14 +58,14 @@ img { max-width: 100%; display: block; }
 }
 
 .login-logo .logo-text {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 700;
     color: var(--accent);
     letter-spacing: -1px;
 }
 
 .login-logo .logo-sub {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -82,7 +73,7 @@ img { max-width: 100%; display: block; }
 }
 
 .login-card h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 24px;
     text-align: center;
@@ -96,7 +87,7 @@ img { max-width: 100%; display: block; }
     border-radius: 8px;
     padding: 10px 14px;
     margin-bottom: 20px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .form-group {
@@ -105,7 +96,7 @@ img { max-width: 100%; display: block; }
 
 .form-group label {
     display: block;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     margin-bottom: 6px;
     color: var(--text-primary);
@@ -120,7 +111,7 @@ textarea.admin-input {
     border: 1.5px solid var(--border);
     border-radius: 8px;
     font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-primary);
     background: #fafafa;
     transition: border-color .2s, box-shadow .2s;
@@ -130,7 +121,7 @@ textarea.admin-input {
 .form-group input:focus,
 .admin-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(192, 57, 43, .12);
+    box-shadow: 0 0 0 3px rgba(82,65,63,.12);
     background: #fff;
 }
 
@@ -141,7 +132,7 @@ textarea.admin-input {
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
@@ -152,15 +143,11 @@ textarea.admin-input {
 .btn-login:hover  { background: var(--accent-light); }
 .btn-login:active { transform: scale(.98); }
 
-/* ============================================================
-   LAYOUT: sidebar + main
-   ============================================================ */
 .admin-layout {
     display: flex;
     min-height: 100vh;
 }
 
-/* ---- Sidebar ---- */
 .sidebar {
     width: var(--sidebar-width);
     background: var(--sidebar-bg);
@@ -178,14 +165,14 @@ textarea.admin-input {
 }
 
 .sidebar-brand .brand-name {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    color: var(--accent);
+    color: #fff;
     letter-spacing: -0.5px;
 }
 
 .sidebar-brand .brand-sub {
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--sidebar-text);
@@ -197,10 +184,10 @@ textarea.admin-input {
 }
 
 .sidebar-section-title {
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: rgba(156,163,197,.5);
+    color: rgba(232,216,214,.5);
     padding: 0 20px;
     margin-bottom: 4px;
 }
@@ -209,9 +196,9 @@ textarea.admin-input {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 20px;
+    padding: 11px 20px;
     color: var(--sidebar-text);
-    font-size: 13.5px;
+    font-size: 15px;
     font-weight: 500;
     border-left: 3px solid transparent;
     transition: all .18s;
@@ -220,13 +207,13 @@ textarea.admin-input {
 .sidebar-nav a:hover {
     background: var(--sidebar-hover);
     color: #fff;
-    border-left-color: rgba(192,57,43,.4);
+    border-left-color: rgba(139,121,119,.6);
 }
 
 .sidebar-nav a.active {
-    background: rgba(192,57,43,.15);
+    background: rgba(139,121,119,.3);
     color: #fff;
-    border-left-color: var(--accent);
+    border-left-color: var(--sidebar-active);
 }
 
 .sidebar-nav a .nav-icon {
@@ -243,14 +230,14 @@ textarea.admin-input {
 }
 
 .sidebar-user {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--sidebar-text);
 }
 
 .sidebar-user strong {
     display: block;
     color: #fff;
-    font-size: 13px;
+    font-size: 15px;
     margin-bottom: 2px;
 }
 
@@ -259,11 +246,11 @@ textarea.admin-input {
     align-items: center;
     gap: 6px;
     margin-top: 10px;
-    padding: 7px 14px;
-    background: rgba(192,57,43,.2);
-    color: #e87070;
+    padding: 8px 16px;
+    background: rgba(139,121,119,.25);
+    color: var(--sidebar-text);
     border-radius: 6px;
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 500;
     transition: background .2s;
     cursor: pointer;
@@ -271,9 +258,8 @@ textarea.admin-input {
     font-family: 'Poppins', sans-serif;
 }
 
-.btn-logout:hover { background: rgba(192,57,43,.4); color: #fff; }
+.btn-logout:hover { background: rgba(139,121,119,.5); color: #fff; }
 
-/* ---- Main content ---- */
 .main-content {
     margin-left: var(--sidebar-width);
     flex: 1;
@@ -282,7 +268,6 @@ textarea.admin-input {
     min-height: 100vh;
 }
 
-/* ---- Top header ---- */
 .top-header {
     height: var(--header-h);
     background: var(--card-bg);
@@ -297,13 +282,13 @@ textarea.admin-input {
 }
 
 .top-header h1 {
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 600;
     flex: 1;
 }
 
 .breadcrumb {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
@@ -312,15 +297,11 @@ textarea.admin-input {
 
 .breadcrumb a { color: var(--accent); }
 
-/* ---- Page content ---- */
 .page-content {
     padding: 28px;
     flex: 1;
 }
 
-/* ============================================================
-   CARDS
-   ============================================================ */
 .card {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -338,7 +319,7 @@ textarea.admin-input {
 }
 
 .card-header h2 {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
 }
 
@@ -346,9 +327,6 @@ textarea.admin-input {
     padding: 22px;
 }
 
-/* ============================================================
-   STAT CARDS (dashboard)
-   ============================================================ */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -375,27 +353,24 @@ textarea.admin-input {
     flex-shrink: 0;
 }
 
-.stat-icon.red    { background: rgba(192,57,43,.12);  color: var(--accent); }
+.stat-icon.red    { background: rgba(82,65,63,.12);   color: var(--accent); }
 .stat-icon.blue   { background: rgba(41,128,185,.12); color: var(--info); }
 .stat-icon.green  { background: rgba(39,174,96,.12);  color: var(--success); }
 .stat-icon.orange { background: rgba(243,156,18,.12); color: var(--warning); }
 .stat-icon.purple { background: rgba(142,68,173,.12); color: #8e44ad; }
 
 .stat-info .stat-value {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     line-height: 1;
 }
 
 .stat-info .stat-label {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     margin-top: 4px;
 }
 
-/* ============================================================
-   TABLES
-   ============================================================ */
 .table-responsive { overflow-x: auto; }
 
 table.admin-table {
@@ -407,7 +382,7 @@ table.admin-table {
     background: #f7f8fc;
     padding: 11px 16px;
     text-align: left;
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: .5px;
     text-transform: uppercase;
@@ -418,12 +393,11 @@ table.admin-table {
 .admin-table tbody td {
     padding: 13px 16px;
     border-bottom: 1px solid var(--border);
-    font-size: 13.5px;
+    font-size: 15px;
     vertical-align: middle;
 }
 
 .admin-table tbody tr:last-child td { border-bottom: none; }
-
 .admin-table tbody tr:hover td { background: #fafbff; }
 
 .table-img {
@@ -442,9 +416,9 @@ table.admin-table {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    padding: 4px 11px;
     border-radius: 20px;
-    font-size: 11.5px;
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -461,19 +435,15 @@ table.admin-table {
     color: var(--text-secondary);
 }
 
-.empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; }
+.empty-state p { font-size: 15px; }
 
-/* ============================================================
-   BUTTONS
-   ============================================================ */
 .btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 9px 18px;
     border-radius: 7px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
@@ -497,7 +467,7 @@ table.admin-table {
 .btn-warning   { background: var(--warning);   color: #fff; }
 .btn-warning:hover   { background: #d68910; }
 
-.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
 
 .actions-cell {
     display: flex;
@@ -505,9 +475,6 @@ table.admin-table {
     align-items: center;
 }
 
-/* ============================================================
-   FORMS
-   ============================================================ */
 .form-card {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -525,7 +492,7 @@ table.admin-table {
 
 .form-field label {
     display: block;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     margin-bottom: 6px;
     color: var(--text-primary);
@@ -539,7 +506,7 @@ table.admin-table {
     border: 1.5px solid var(--border);
     border-radius: 8px;
     font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-primary);
     background: #fafafa;
     transition: border-color .2s, box-shadow .2s;
@@ -550,18 +517,18 @@ table.admin-table {
 .form-field select:focus,
 .form-field textarea:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(192,57,43,.1);
+    box-shadow: 0 0 0 3px rgba(82,65,63,.1);
     background: #fff;
 }
 
 .form-field .errorlist {
     margin-top: 5px;
     color: var(--danger);
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .form-field .help-text {
-    font-size: 11.5px;
+    font-size: 13px;
     color: var(--text-secondary);
     margin-top: 4px;
 }
@@ -579,7 +546,7 @@ table.admin-table {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
 }
 
@@ -593,9 +560,6 @@ table.admin-table {
     width: 60px; height: 60px;
 }
 
-/* ============================================================
-   CONFIRM DELETE
-   ============================================================ */
 .confirm-card {
     max-width: 480px;
     background: var(--card-bg);
@@ -606,10 +570,8 @@ table.admin-table {
     text-align: center;
 }
 
-.confirm-icon { font-size: 48px; margin-bottom: 16px; }
-
 .confirm-card h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 10px;
 }
@@ -618,6 +580,7 @@ table.admin-table {
     color: var(--text-secondary);
     margin-bottom: 28px;
     line-height: 1.6;
+    font-size: 15px;
 }
 
 .confirm-card .object-name {
@@ -631,14 +594,11 @@ table.admin-table {
     justify-content: center;
 }
 
-/* ============================================================
-   ALERTS / MESSAGES
-   ============================================================ */
 .alert {
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 20px;
-    font-size: 13.5px;
+    font-size: 15px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -648,9 +608,6 @@ table.admin-table {
 .alert-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
 .alert-warning { background: #fffbeb; color: #78350f; border: 1px solid #fcd34d; }
 
-/* ============================================================
-   DASHBOARD EXTRA
-   ============================================================ */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -677,7 +634,7 @@ table.admin-table {
     background: #f7f8fc;
     border: 1.5px solid var(--border);
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 500;
     transition: all .18s;
     cursor: pointer;
@@ -686,7 +643,7 @@ table.admin-table {
 
 .quick-action-btn:hover {
     border-color: var(--accent);
-    background: #fff5f5;
+    background: #fdf8f7;
     color: var(--accent);
 }
 

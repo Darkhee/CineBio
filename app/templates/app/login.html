@@ -1,26 +1,165 @@
 {% extends 'app/base.html' %}
+{% load static %}
 
-{% block titulo %}Login - CineBio{% endblock %}
-{% block nav_centro %}
-<div class="nav-links">
-    <a href="{% url 'listar_peliculas' %}">Películas</a>
-    <a href="{% url 'confiteria' %}">Confitería</a>
-</div>
+{% block titulo %}Iniciar Sesión - CineBio{% endblock %}
+{% block nav_izquierda %}
+<a href="javascript:history.back()" class="btn-atras">&#8249; Atrás</a>
 {% endblock %}
+{% block nav_centro %}{% endblock %}
 
 {% block contenido %}
 
-<div class="formulario-container">
-    <h1>Iniciar sesión</h1>
+<div class="login-page">
 
-    <form method="POST">
-        {% csrf_token %}
+    <div class="login-card">
+        <h1 class="login-titulo">Iniciar sesión</h1>
+        <p class="login-subtitulo">¡Descubre nuevas funciones y<br>disfruta de tus beneficios!</p>
+
+        {% if formulario.errors %}
+            <p class="login-error">Correo o contraseña incorrectos.</p>
+        {% endif %}
+
+        <form method="POST" style="width:100%;">
+            {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-        {{ formulario.as_p }}
-        <button type="submit">Ingresar</button>
-    </form>
 
-    <a href="{% url 'registro' %}">¿No tienes cuenta? Regístrate</a>
+            <div class="login-field">
+                <input type="email" name="username"
+                       placeholder="Correo electrónico"
+                       class="login-input" required autofocus>
+            </div>
+
+            <div class="login-field">
+                <input type="password" name="password"
+                       placeholder="Contraseña"
+                       class="login-input" required>
+            </div>
+
+            <button type="submit" class="login-btn">Iniciar sesión</button>
+        </form>
+    </div>
+
+    <div class="login-registro">
+        <p><strong>Regístrate</strong> para acumular puntos y obtener beneficios.</p>
+        <a href="{% url 'registro' %}" class="login-btn-registro">Registrarse</a>
+    </div>
+
 </div>
+
+<style>
+.login-page {
+    min-height: calc(100vh - 70px);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 32px;
+}
+
+.login-card {
+    background: #8a7370;
+    border-radius: 24px;
+    padding: 52px 56px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.login-titulo {
+    font-size: 30px;
+    font-weight: 800;
+    font-style: italic;
+    color: #fff;
+    text-align: center;
+    margin: 0 0 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-subtitulo {
+    font-size: 14px;
+    color: rgba(255,255,255,.75);
+    text-align: center;
+    line-height: 1.6;
+    margin: 0 0 28px;
+}
+
+.login-error {
+    background: rgba(0,0,0,.2);
+    color: #ffe0e0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.login-field {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 15px 24px;
+    border: none;
+    border-radius: 30px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #555;
+    background: #fff;
+    outline: none;
+    text-align: center;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0,0,0,.10);
+}
+
+.login-input::placeholder { color: #aaa; }
+
+.login-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    background: #3d2e2c;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: background .2s;
+}
+.login-btn:hover { background: #2a1f1e; }
+
+.login-registro {
+    text-align: center;
+}
+
+.login-registro p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 16px;
+}
+
+.login-btn-registro {
+    display: inline-block;
+    padding: 12px 40px;
+    background: #52413f;
+    color: #fff;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    transition: background .2s;
+}
+.login-btn-registro:hover { background: #3a2e2c; }
+</style>
 
 {% endblock %}

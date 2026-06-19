@@ -34,25 +34,80 @@
 
     <div class="detalle-funciones">
         <h2>Elegir función</h2>
-        <div class="funciones-fecha">
-            <span>Fecha</span>
-            <span>Hoy</span>
-        </div>
-        {% for tipo, funciones in funciones_por_tipo.items %}
-        <div class="funciones-tipo">
-            <p>{{ tipo }}</p>
-            <div class="horarios">
-                {% for funcion in funciones %}
-                <a href="{% url 'seleccionar_butacas' funcion.id %}" class="horario-btn">
-                    {{ funcion.hora|time:"H:i" }}
-                </a>
+
+        {% if fechas_dict %}
+            <!-- Pestañas de fecha -->
+            <div class="fechas-tabs">
+                {% for key, data in fechas_dict.items %}
+                <button class="fecha-tab {% if forloop.first %}activo{% endif %}"
+                        onclick="mostrarFecha('{{ key }}', this)">
+                    {% if data.fecha_obj == hoy %}
+                        Hoy
+                    {% else %}
+                        {{ data.fecha_obj|date:"j \d\e F" }}
+                    {% endif %}
+                </button>
                 {% endfor %}
             </div>
-        </div>
-        {% empty %}
-        <p>No hay funciones disponibles.</p>
-        {% endfor %}
+
+            <!-- Funciones por fecha -->
+            {% for key, data in fechas_dict.items %}
+            <div class="fecha-funciones" id="fecha-{{ key }}"
+                 {% if not forloop.first %}style="display:none;"{% endif %}>
+                {% for tipo, lista in data.tipos.items %}
+                <div class="funciones-tipo">
+                    <p>{{ tipo }}</p>
+                    <div class="horarios">
+                        {% for funcion in lista %}
+                        <a href="{% url 'seleccionar_butacas' funcion.id %}" class="horario-btn">
+                            {{ funcion.hora|time:"H:i" }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <p style="color:#888; margin-top:16px;">No hay funciones disponibles.</p>
+        {% endif %}
     </div>
+
+<script>
+function mostrarFecha(key, btn) {
+    document.querySelectorAll('.fecha-funciones').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.fecha-tab').forEach(el => el.classList.remove('activo'));
+    document.getElementById('fecha-' + key).style.display = 'block';
+    btn.classList.add('activo');
+}
+</script>
+
+<style>
+.fechas-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.fecha-tab {
+    padding: 8px 18px;
+    border: 1.5px solid #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    background: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all .15s;
+}
+.fecha-tab.activo,
+.fecha-tab:hover {
+    background: #52413f;
+    color: #fff;
+    border-color: #52413f;
+}
+</style>
 
     <a href="{% url 'listar_peliculas' %}" class="btn-volver">← Volver al inicio</a>
 

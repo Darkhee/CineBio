@@ -1,0 +1,109 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block titulo %}CineBio - Cartelera{% endblock %}
+
+{% block contenido %}
+<style>
+    /* Contenedor principal */
+    .contenedor-cartelera {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Grilla de 3 columnas estilo Cineplanet */
+    .grilla-cineplanet {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px 20px; /* 30px de espacio vertical, 20px horizontal */
+    }
+
+    .tarjeta-pelicula-cp {
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+    }
+
+    /* Contenedor de la imagen */
+    .img-container {
+        width: 100%;
+        aspect-ratio: 2 / 3; /* Proporción clásica de póster */
+        overflow: hidden;
+        border-radius: 4px;
+        margin-bottom: 12px;
+        position: relative;
+        background-color: #f0f0f0; /* Color de fondo por si no hay imagen */
+    }
+
+    .img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .tarjeta-pelicula-cp:hover .img-container img {
+        transform: scale(1.05); /* Pequeño zoom al pasar el mouse */
+    }
+
+    /* Textos debajo de la imagen */
+    .titulo-pelicula {
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #2d2014;
+        margin: 0 0 4px 0;
+        line-height: 1.2;
+    }
+
+    .info-pelicula {
+        font-size: 13px;
+        color: #555;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    /* Responsivo: 2 columnas en tablets, 1 en celulares */
+    @media (max-width: 900px) {
+        .grilla-cineplanet {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 500px) {
+        .grilla-cineplanet {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="contenedor-cartelera">
+    <div class="grilla-cineplanet">
+        {% for pelicula in peliculas %}
+            <a href="{% url 'detalle_pelicula' pelicula.id %}" class="tarjeta-pelicula-cp">
+                
+                <div class="img-container">
+                    {% if pelicula.imagen %}
+                        <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}">
+                    {% endif %}
+                </div>
+
+                <h3 class="titulo-pelicula">{{ pelicula.nombre }}</h3>
+                
+                <p class="info-pelicula">
+                    {% if pelicula.duracion %}
+                        {{ pelicula.duracion }} minutos
+                    {% else %}
+                        Duración no disponible
+                    {% endif %}
+                </p>
+
+            </a>
+        {% empty %}
+            <p>No hay películas en cartelera.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

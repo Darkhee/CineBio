@@ -28,49 +28,105 @@
     </div>
 </section>
 
-<section class="barra-filtros">
-    <p>¿Qué película quieres ver? Elige tus opciones y presiona Filtrar</p>
-    <form action="/buscar" method="GET">
-        <select name="pelicula">
-            <option value="">Por película</option>
-            {% for pelicula in peliculas %}
-            <option value="{{ pelicula.id }}">{{ pelicula.nombre }}</option>
-            {% endfor %}
-        </select>
-        <select name="ciudad">
-            <option value="">Por ciudad</option>
-        </select>
-        <select name="cine">
-            <option value="">Por cine</option>
-        </select>
-        <select name="fecha">
-            <option value="">Por fecha</option>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
-</section>
+<style>
+    /* --- DISEÑO BENTO PARA LA PORTADA --- */
+    .seccion-cartelera-inicio {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
 
-<section class="cartelera">
-    <h2>Películas</h2>
-    <div class="grilla-peliculas">
-        {% for pelicula in peliculas %}
-        <article class="tarjeta-pelicula">
-            <a href="{% url 'detalle_pelicula' pelicula.id %}">
+    .titulo-seccion {
+        font-size: 32px;
+        color: #2d2014;
+        margin-bottom: 24px;
+        font-weight: 700;
+    }
+
+    .grilla-portada {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 250px; /* Altura base de las tarjetas pequeñas */
+        gap: 16px;
+    }
+
+    .tarjeta-portada {
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        display: block;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .tarjeta-portada:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        z-index: 2;
+    }
+
+    .tarjeta-portada img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* Posiciones específicas del Bento Grid */
+    .tarjeta-portada.posicion-1 { grid-column: span 2; grid-row: span 2; }
+    .tarjeta-portada.posicion-2 { grid-column: span 1; grid-row: span 2; }
+    .tarjeta-portada.posicion-3 { grid-column: span 1; grid-row: span 1; }
+
+    /* Botón Ver Más */
+    .tarjeta-ver-mas-bento {
+        background-color: #52413f;; 
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 24px;
+        border-radius: 12px;
+        transition: background 0.3s, transform 0.3s;
+        grid-column: span 1;
+        grid-row: span 1;
+        line-height: 1.2;
+        box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3);
+    }
+
+    .tarjeta-ver-mas-bento:hover {
+        background-color: #52413f;;
+        transform: scale(1.02);
+    }
+
+    /* Responsivo para móviles */
+    @media (max-width: 768px) {
+        .grilla-portada { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+        .tarjeta-portada.posicion-1, .tarjeta-portada.posicion-2 { grid-column: span 2; }
+        .tarjeta-ver-mas-bento { grid-column: span 2; }
+    }
+</style>
+
+<section class="seccion-cartelera-inicio">
+    <h2 class="titulo-seccion">Películas</h2>
+    
+    <div class="grilla-portada">
+        {% for pelicula in peliculas|slice:":3" %}
+            <a href="{% url 'detalle_pelicula' pelicula.id %}" class="tarjeta-portada posicion-{{ forloop.counter }}">
                 {% if pelicula.imagen %}
-                <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}">
+                    <img src="{{ pelicula.imagen.url }}" alt="{{ pelicula.nombre }}">
+                {% else %}
+                    <div style="background:#52413f; width:100%; height:100%;"></div>
                 {% endif %}
             </a>
-        </article>
-        {% empty %}
-        <p>No existen películas registradas.</p>
         {% endfor %}
 
-        <article class="tarjeta-ver-mas">
-            <a href="#">
-                <h3>Ver más películas</h3>
-                <span>&gt;</span>
-            </a>
-        </article>
+        <a href="{% url 'cartelera_completa' %}" class="tarjeta-ver-mas-bento">
+            Ver más<br>películas
+        </a>
     </div>
 </section>
 
@@ -135,5 +191,50 @@
         iniciarTemporizador();
     });
 </script>
+
+<style>
+    /* Diseño del banner gigante (Estilo Cineplanet) */
+    .banner-destacado {
+        position: relative; 
+        width: 100%;
+        height: 88vh; /* Ocupará el 75% del alto de la pantalla del usuario */
+        min-height: 500px; /* Se asegura de que no sea muy pequeño en celulares */
+        background-size: cover !important; /* Estira la imagen sin deformarla */
+        background-position: 50% 45% !important; /* Muestra desde arriba (cabezas) hacia abajo */
+        background-repeat: no-repeat !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centra el título y botón verticalmente */
+        align-items: flex-start; /* Alinea el título y botón a la izquierda */
+        padding-left: 8%; /* Margen izquierdo para el texto */
+    }
+
+    /* Le damos un sombreado oscuro a la imagen para que el texto blanco resalte más */
+    .banner-destacado::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+        z-index: 1;
+    }
+
+    /* Aseguramos que el texto esté por encima de la sombra oscura */
+    .contenido-banner {
+        position: relative;
+        z-index: 2; 
+    }
+
+    /* Centrar el contenedor de las barritas */
+    .indicadores-carrusel {
+        position: absolute !important;
+        bottom: 30px !important;
+        left: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        z-index: 10;
+    }
+</style>
 
 {% endblock %}

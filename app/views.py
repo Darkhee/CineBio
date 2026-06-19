@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import (
     Pelicula, Funcion, Butaca, ProductoConfiteria,
-    Compra, Entrada, ItemConfiteria, PerfilUsuario
+    Compra, Entrada, ItemConfiteria, PerfilUsuario, 
 )
 
 
@@ -16,19 +16,39 @@ def listar_peliculas(request):
     peliculas = Pelicula.objects.all()
     return render(request, 'app/listar_peliculas.html', {'peliculas': peliculas})
 
+def cartelera_completa(request):
+    peliculas = Pelicula.objects.all()
+    return render(request, 'app/cartelera_completa.html', {'peliculas': peliculas})
+
+
+def nosotros(request):
+    return render(request, 'app/nosotros.html')
+
 
 def detalle_pelicula(request, id):
+    from datetime import date
     pelicula = get_object_or_404(Pelicula, id=id)
-    funciones = Funcion.objects.filter(pelicula=pelicula)
+    hoy = date.today()
 
-    funciones_por_tipo = {}
+    # Solo funciones desde hoy, ordenadas por fecha y hora
+    funciones = Funcion.objects.filter(
+        pelicula=pelicula,
+        fecha__gte=hoy
+    ).order_by('fecha', 'hora')
+
+    # Agrupar por fecha → tipo
+    fechas_dict = {}
     for funcion in funciones:
+        key = str(funcion.fecha)
+        if key not in fechas_dict:
+            fechas_dict[key] = {'fecha_obj': funcion.fecha, 'tipos': {}}
         tipo = funcion.get_tipo_display()
-        funciones_por_tipo.setdefault(tipo, []).append(funcion)
+        fechas_dict[key]['tipos'].setdefault(tipo, []).append(funcion)
 
     return render(request, 'app/detalle_pelicula.html', {
         'pelicula': pelicula,
-        'funciones_por_tipo': funciones_por_tipo,
+        'fechas_dict': fechas_dict,
+        'hoy': hoy,
     })
 
 

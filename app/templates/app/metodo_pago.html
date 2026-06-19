@@ -2,8 +2,11 @@
 {% load static %}
 
 {% block titulo %}Pago - CineBio{% endblock %}
+{% block nav_izquierda %}
+<a href="javascript:history.back()" class="btn-atras">&#8249; Atrás</a>
+{% endblock %}
 {% block nav_centro %}
-<div style="font-size:17px; font-weight:700; letter-spacing:.5px;">Pago</div>
+<div style="font-size:17px; font-weight:700; letter-spacing:.5px;color: #ffffff;">Pago</div>
 {% endblock %}
 
 {% block contenido %}
@@ -26,7 +29,7 @@
             <p><strong>Butacas: {{ entradas|length }}</strong></p>
             <p><strong>Entradas: {{ entradas|length }}</strong></p>
         {% else %}
-            <div style="font-size:40px; margin-bottom:12px;">🍿</div>
+            <div style="font-size:40px; margin-bottom:12px;"></div>
             <h2>Solo Confitería</h2>
         {% endif %}
 
@@ -53,11 +56,11 @@
             <form method="POST">
                 {% csrf_token %}
 
-                <label class="metodo-opcion">
+               <label class="metodo-opcion">
                     <input type="radio" name="metodo" value="mercadopago" required>
                     <span class="metodo-label">
                         <span class="metodo-nombre">Mercado Pago</span>
-                        <span class="metodo-logo metodo-mp">mercado<br>pago</span>
+                        <img src="/media/metodos_de_pago/mercado_pago.png" alt="Mercado Pago" style="height: 50px; object-fit: contain;">
                     </span>
                 </label>
 
@@ -65,7 +68,7 @@
                     <input type="radio" name="metodo" value="transbank">
                     <span class="metodo-label">
                         <span class="metodo-nombre">Transbank</span>
-                        <span class="metodo-logo metodo-wp">webpay<strong>PLUS</strong></span>
+                        <img src="/media/metodos_de_pago/webpay.png" alt="Transbank" style="height: 30px; object-fit: contain;">
                     </span>
                 </label>
 
