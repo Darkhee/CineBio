@@ -14,34 +14,33 @@
 
     <!-- Panel izquierdo: resumen de compra -->
     <div class="butacas-info">
-        {% if compra.funcion %}
-            {% if compra.funcion.pelicula.imagen %}
-                <img src="{{ compra.funcion.pelicula.imagen.url }}"
-                     alt="{{ compra.funcion.pelicula.nombre }}">
+        {% if funcion %}
+            {% if funcion.pelicula.imagen %}
+                <img src="{{ funcion.pelicula.imagen.url }}"
+                     alt="{{ funcion.pelicula.nombre }}">
             {% endif %}
-            <h2>{{ compra.funcion.pelicula.nombre }}<br>
-                <small>{{ compra.funcion.get_tipo_display }}</small>
+            <h2>{{ funcion.pelicula.nombre }}<br>
+                <small>{{ funcion.get_tipo_display }}</small>
             </h2>
-            <p>Hoy {{ compra.funcion.fecha }}</p>
-            <p>{{ compra.funcion.hora|time:"H:i" }}hrs</p>
-            <p><strong>{{ compra.funcion.sala.nombre }}</strong></p>
+            <p>Hoy {{ funcion.fecha }}</p>
+            <p>{{ funcion.hora|time:"H:i" }}hrs</p>
+            <p><strong>{{ funcion.sala.nombre }}</strong></p>
             <hr style="margin:12px 0; border-color:#ccc;">
-            <p><strong>Butacas: {{ entradas|length }}</strong></p>
-            <p><strong>Entradas: {{ entradas|length }}</strong></p>
+            <p><strong>Butacas: {{ butacas_ids|length }}</strong></p>
+            <p><strong>Entradas: {{ butacas_ids|length }}</strong></p>
         {% else %}
-            <div style="font-size:40px; margin-bottom:12px;"></div>
             <h2>Solo Confitería</h2>
         {% endif %}
 
-        {% if items %}
+        {% if items_preview %}
             <p style="margin-top:8px;"><strong>Confitería:</strong></p>
-            {% for item in items %}
+            {% for item in items_preview %}
                 <p style="font-size:13px;">{{ item.producto.nombre }} x{{ item.cantidad }}</p>
             {% endfor %}
         {% endif %}
 
         <hr style="margin:12px 0; border-color:#ccc;">
-        <p><strong>Total: ${{ compra.total|floatformat:"0" }}</strong></p>
+        <p><strong>Total: ${{ total|floatformat:"0" }}</strong></p>
     </div>
 
     <!-- Panel derecho: método de pago -->

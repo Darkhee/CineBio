@@ -30,8 +30,7 @@
                 </div>
                 <h3>¿Ya tienes cuenta?</h3>
                 <p>Inicia sesión para comprar con tu cuenta de socio y acumular puntos.</p>
-                <a href="{% url 'login' %}?next={% if tiene_items %}{% url 'pago' %}{% else %}{% url 'confiteria' %}{% endif %}" class="btn-tipo btn-registrado">
-                    Iniciar sesión
+<a href="{% url 'login' %}?next={% url 'confiteria' %}" class="btn-tipo btn-registrado">                    Iniciar sesión
                 </a>
             </div>
 
@@ -59,7 +58,7 @@
 
         <div style="text-align:center; margin-top:20px;">
             <a href="javascript:history.back()" style="font-size:13px; color:#888; text-decoration:underline;">
-                Volver a selección de butacas
+                Volver
             </a>
         </div>
     </div>

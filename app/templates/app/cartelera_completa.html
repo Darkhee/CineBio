@@ -3,6 +3,17 @@
 
 {% block titulo %}CineBio - Cartelera{% endblock %}
 
+{% block nav_izquierda %}
+<a href="javascript:history.back()" class="btn-atras">&#8249; Atrás</a>
+{% endblock %}
+
+{% block nav_centro %}
+<div class="nav-links">
+    <a href="{% url 'listar_peliculas' %}">Inicio</a>
+    <a href="{% url 'confiteria' %}">Confitería</a>
+</div>
+{% endblock %}
+
 {% block contenido %}
 <style>
     /* Contenedor principal */

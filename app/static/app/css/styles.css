@@ -18,17 +18,18 @@ body {
 
 header {
     background-color: #52413f;
-    padding: 12px 30px;
-    position: fixed; /* Asegúrate que diga fixed aquí */
+    padding: 0 30px;
+    height: 70px;
+    position: sticky;
     top: 0;
-    width: 100%;
-    z-index: 50; /* BAJAMOS el z-index del header */
+    z-index: 100;
 }
 
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 100%;
 }
 
 nav button {
@@ -1090,3 +1091,9 @@ footer p {
     font-size: 16px;
 }
 
+.logo-img {
+    height: 170px;
+    width: auto;
+    object-fit: contain;
+    
+}

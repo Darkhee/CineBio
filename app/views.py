@@ -26,17 +26,31 @@ def nosotros(request):
 
 
 def detalle_pelicula(request, id):
-    from datetime import date
+    from datetime import date, timedelta
+    from django.utils import timezone
+
     pelicula = get_object_or_404(Pelicula, id=id)
     hoy = date.today()
+    ahora = timezone.localtime().time()
 
-    # Solo funciones desde hoy, ordenadas por fecha y hora
     funciones = Funcion.objects.filter(
         pelicula=pelicula,
         fecha__gte=hoy
     ).order_by('fecha', 'hora')
 
-    # Agrupar por fecha → tipo
+    funciones_validas = []
+    for f in funciones:
+        if f.fecha == hoy:
+            limite = (timezone.localtime().replace(
+                hour=f.hora.hour, minute=f.hora.minute, second=0, microsecond=0
+            ) + timedelta(minutes=15)).time()
+            if ahora <= limite:
+                funciones_validas.append(f)
+        else:
+            funciones_validas.append(f)
+
+    funciones = funciones_validas
+
     fechas_dict = {}
     for funcion in funciones:
         key = str(funcion.fecha)
@@ -225,8 +239,6 @@ def datos_invitado(request):
                 'apellido':  apellido,
                 'correo':    correo,
             }
-            if request.session.get('confiteria_items'):
-                return redirect('pago')
             return redirect('confiteria')
 
     return render(request, 'app/datos_invitado.html', {'errores': errores})
@@ -243,7 +255,10 @@ def confiteria(request):
                 items[key] = value
         request.session['confiteria_items'] = items
 
-        if not items:
+        butacas_ids = request.session.get('butacas_ids', [])
+
+        # Solo bloquea si NO hay confitería Y tampoco hay entradas en curso
+        if not items and not butacas_ids:
             return redirect('confiteria')
 
         usuario_ok = request.user.is_authenticated and not request.user.is_staff
@@ -277,69 +292,39 @@ def pago(request):
     if not usuario_ok and not invitado:
         return redirect('tipo_compra')
 
-    funcion = get_object_or_404(Funcion, id=funcion_id) if funcion_id else None
+    # Solo redirige a la pantalla de método de pago; nada se guarda aún
+    return redirect('metodo_pago')
 
+
+def metodo_pago(request):
+    funcion_id       = request.session.get('funcion_id')
+    butacas_ids      = request.session.get('butacas_ids', [])
+    invitado         = request.session.get('invitado')
+    confiteria_items = request.session.get('confiteria_items', {})
+
+    if not butacas_ids and not confiteria_items:
+        return redirect('listar_peliculas')
+
+    usuario_ok = request.user.is_authenticated and not request.user.is_staff
+    if not usuario_ok and not invitado:
+        return redirect('tipo_compra')
+
+    funcion = get_object_or_404(Funcion, id=funcion_id) if funcion_id else None
     total_entradas = funcion.precio * len(butacas_ids) if funcion and butacas_ids else 0
 
     total_confiteria = 0
-    items_compra = []
+    items_preview = []
     for key, value in confiteria_items.items():
         pid = key.replace('cantidad_', '')
         try:
             producto = ProductoConfiteria.objects.get(id=pid)
             cantidad = int(value)
             total_confiteria += producto.precio * cantidad
-            items_compra.append((producto, cantidad))
+            items_preview.append({'producto': producto, 'cantidad': cantidad})
         except ProductoConfiteria.DoesNotExist:
             pass
 
     total = total_entradas + total_confiteria
-
-    if usuario_ok:
-        compra = Compra.objects.create(
-            usuario=request.user,
-            funcion=funcion,
-            total=total,
-        )
-    else:
-        compra = Compra.objects.create(
-            usuario=None,
-            funcion=funcion,
-            total=total,
-            inv_tipo_doc  = invitado.get('tipo_doc', ''),
-            inv_documento = invitado.get('documento', ''),
-            inv_nombre    = invitado.get('nombre', ''),
-            inv_apellido  = invitado.get('apellido', ''),
-            inv_correo    = invitado.get('correo', ''),
-        )
-
-    for bid in butacas_ids:
-        butaca = get_object_or_404(Butaca, id=bid)
-        Entrada.objects.create(compra=compra, butaca=butaca)
-
-    for producto, cantidad in items_compra:
-        ItemConfiteria.objects.create(compra=compra, producto=producto, cantidad=cantidad)
-
-    # Puntos y visitas para socios registrados
-    if usuario_ok:
-        try:
-            perfil = request.user.perfilusuario
-            if butacas_ids:
-                perfil.visitas += 1   # visita solo si compró entradas
-            if total >= 2000:
-                perfil.puntos += total // 2000  # puntos por cualquier compra
-            perfil.save()
-        except Exception:
-            pass
-
-    for key in ('funcion_id', 'butacas_ids', 'invitado', 'confiteria_items'):
-        request.session.pop(key, None)
-
-    return redirect('metodo_pago', compra_id=compra.id)
-
-
-def metodo_pago(request, compra_id):
-    compra = get_object_or_404(Compra, id=compra_id)
     error = None
 
     if request.method == 'POST':
@@ -347,15 +332,58 @@ def metodo_pago(request, compra_id):
         if not metodo:
             error = 'Debes seleccionar un método de pago.'
         else:
+            # ── Aquí SÍ se guarda la venta, solo al confirmar ──
+            if usuario_ok:
+                compra = Compra.objects.create(
+                    usuario=request.user,
+                    funcion=funcion,
+                    total=total,
+                )
+            else:
+                compra = Compra.objects.create(
+                    usuario=None,
+                    funcion=funcion,
+                    total=total,
+                    inv_tipo_doc  = invitado.get('tipo_doc', ''),
+                    inv_documento = invitado.get('documento', ''),
+                    inv_nombre    = invitado.get('nombre', ''),
+                    inv_apellido  = invitado.get('apellido', ''),
+                    inv_correo    = invitado.get('correo', ''),
+                )
+
+            for bid in butacas_ids:
+                butaca = get_object_or_404(Butaca, id=bid)
+                Entrada.objects.create(compra=compra, butaca=butaca)
+
+            for item in items_preview:
+                ItemConfiteria.objects.create(
+                    compra=compra,
+                    producto=item['producto'],
+                    cantidad=item['cantidad'],
+                )
+
+            if usuario_ok:
+                try:
+                    perfil = request.user.perfilusuario
+                    if butacas_ids:
+                        perfil.visitas += 1
+                    if total >= 2000:
+                        perfil.puntos += total // 2000
+                    perfil.save()
+                except Exception:
+                    pass
+
+            for key in ('funcion_id', 'butacas_ids', 'invitado', 'confiteria_items'):
+                request.session.pop(key, None)
+
             return redirect('confirmacion', compra_id=compra.id)
 
-    entradas = Entrada.objects.filter(compra=compra)
-    items    = ItemConfiteria.objects.filter(compra=compra)
     return render(request, 'app/metodo_pago.html', {
-        'compra':   compra,
-        'entradas': entradas,
-        'items':    items,
-        'error':    error,
+        'funcion':          funcion,
+        'butacas_ids':      butacas_ids,
+        'items_preview':    items_preview,
+        'total':            total,
+        'error':            error,
     })
 
 def confirmacion(request, compra_id):
