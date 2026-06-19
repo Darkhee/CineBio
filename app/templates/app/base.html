@@ -30,11 +30,14 @@
         <button aria-label="Menú principal" onclick="toggleMenu()">☰</button>
         {% endblock %}
 
-        {% block nav_centro %}
-        <div class="logo">
-            <h1>CineBio</h1>
-        </div>
-        {% endblock %}
+       {% block nav_centro %}
+<div class="logo">
+    <a href="{% url 'listar_peliculas' %}" style="display:flex; align-items:center; gap:0px; text-decoration:none;">
+        <img src="{% static 'app/img/logoCineBio.png' %}" alt="CineBio" class="logo-img">
+        <h1>CineBio</h1>
+    </a>
+</div>
+{% endblock %}
 
         <div class="perfil-usuario">
             {% if user.is_authenticated and not user.is_staff %}
