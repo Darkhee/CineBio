@@ -68,13 +68,13 @@
         });
     }
 
-    // Arrancar en la pestaña "combo" al cargar la página
+    
     document.addEventListener('DOMContentLoaded', () => {
         const btnCombo = document.querySelector('.tab-btn[data-cat="combo"]');
         if (btnCombo) {
             filtrar('combo', btnCombo);
         } else {
-            // fallback: primer tab disponible
+           
             const primer = document.querySelector('.tab-btn');
             if (primer) primer.click();
         }

@@ -20,10 +20,8 @@
         <form method="post" id="form-butacas">
             {% csrf_token %}
 
-            <!-- Pantalla -->
             <div class="admin-pantalla">Pantalla</div>
 
-            <!-- Mapa de butacas -->
             <div class="admin-sala-wrap">
                 {% for fila, butacas in filas.items %}
                 <div class="admin-fila">
@@ -48,13 +46,11 @@
                 {% endfor %}
             </div>
 
-            <!-- Leyenda -->
             <div class="admin-leyenda">
                 <span><span class="admin-butaca disponible mini"></span> Habilitada</span>
                 <span><span class="admin-butaca inhabilitada mini"></span> Inhabilitada</span>
             </div>
 
-            <!-- Footer con resumen y guardar -->
             <div class="admin-butacas-footer">
                 <div class="resumen-inhabilitar">
                     Inhabilitadas:

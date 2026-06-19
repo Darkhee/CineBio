@@ -175,12 +175,11 @@ header {
     left: 0;
     width: 100%;
     z-index: 1000;
-    /* Color sólido al inicio */
     background-color: #52413f !important; 
-    transition: all 0.3s ease; /* Suaviza el cambio de color */
+    transition: all 0.3s ease; 
 }
 
-/* Esta clase se activará con JS cuando bajes */
+
 header.scrolled {
     background-color: rgba(82, 65, 63, 0.6) !important; 
     backdrop-filter: blur(10px) !important;
@@ -188,7 +187,7 @@ header.scrolled {
 }
 
 body {
-    padding-top: 60px; /* Ajusta según la altura de tu header */
+    padding-top: 60px; 
 }
 
 </style>
@@ -219,7 +218,7 @@ document.addEventListener('click', function() {
         const menu = document.getElementById('menuLateral');
         const overlay = document.getElementById('menuOverlay');
         
-        // Si el menú está oculto (transform tiene -100%), lo mostramos
+      
         if (menu.style.transform === 'translateX(0px)') {
             menu.style.transform = 'translateX(-100%)';
             overlay.style.display = 'none';

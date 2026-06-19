@@ -16,18 +16,18 @@
 
 {% block contenido %}
 <style>
-    /* Contenedor principal */
+    
     .contenedor-cartelera {
         max-width: 1200px;
         margin: 40px auto;
         padding: 0 20px;
     }
 
-    /* Grilla de 3 columnas estilo Cineplanet */
+    
     .grilla-cineplanet {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 30px 20px; /* 30px de espacio vertical, 20px horizontal */
+        gap: 30px 20px; 
     }
 
     .tarjeta-pelicula-cp {
@@ -38,15 +38,15 @@
         position: relative;
     }
 
-    /* Contenedor de la imagen */
+ 
     .img-container {
         width: 100%;
-        aspect-ratio: 2 / 3; /* Proporción clásica de póster */
+        aspect-ratio: 2 / 3; 
         overflow: hidden;
         border-radius: 4px;
         margin-bottom: 12px;
         position: relative;
-        background-color: #f0f0f0; /* Color de fondo por si no hay imagen */
+        background-color: #f0f0f0; 
     }
 
     .img-container img {
@@ -57,10 +57,10 @@
     }
 
     .tarjeta-pelicula-cp:hover .img-container img {
-        transform: scale(1.05); /* Pequeño zoom al pasar el mouse */
+        transform: scale(1.05); 
     }
 
-    /* Textos debajo de la imagen */
+   
     .titulo-pelicula {
         font-size: 18px;
         font-weight: 700;
@@ -77,7 +77,7 @@
         margin: 0;
     }
 
-    /* Responsivo: 2 columnas en tablets, 1 en celulares */
+   
     @media (max-width: 900px) {
         .grilla-cineplanet {
             grid-template-columns: repeat(2, 1fr);

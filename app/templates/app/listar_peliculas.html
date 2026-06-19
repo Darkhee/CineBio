@@ -29,7 +29,7 @@
 </section>
 
 <style>
-    /* --- DISEÑO BENTO PARA LA PORTADA --- */
+  
     .seccion-cartelera-inicio {
         max-width: 1200px;
         margin: 40px auto;
@@ -46,7 +46,7 @@
     .grilla-portada {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        grid-auto-rows: 250px; /* Altura base de las tarjetas pequeñas */
+        grid-auto-rows: 250px; 
         gap: 16px;
     }
 
@@ -72,12 +72,11 @@
         object-position: center;
     }
 
-    /* Posiciones específicas del Bento Grid */
+  
     .tarjeta-portada.posicion-1 { grid-column: span 2; grid-row: span 2; }
     .tarjeta-portada.posicion-2 { grid-column: span 1; grid-row: span 2; }
     .tarjeta-portada.posicion-3 { grid-column: span 1; grid-row: span 1; }
 
-    /* Botón Ver Más */
     .tarjeta-ver-mas-bento {
         background-color: #52413f;; 
         color: white;
@@ -102,7 +101,7 @@
         transform: scale(1.02);
     }
 
-    /* Responsivo para móviles */
+   
     @media (max-width: 768px) {
         .grilla-portada { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
         .tarjeta-portada.posicion-1, .tarjeta-portada.posicion-2 { grid-column: span 2; }
@@ -131,29 +130,24 @@
 </section>
 
 <script>
-    // Variables globales para el control del carrusel
+    
     let indexActual = 0;
     let intervaloBanner;
-    const TIEMPO_ROTACION = 5000; // Tiempo en milisegundos (5000ms = 5 segundos)
+    const TIEMPO_ROTACION = 5000; 
 
     function cambiarBanner(elemento) {
         const indicadores = Array.from(document.querySelectorAll('.indicadores-carrusel .indicador'));
         
-        // 1. Quitamos la clase 'activo' de todas las barras
         indicadores.forEach(ind => ind.classList.remove('activo'));
 
-        // 2. Se la agregamos a la barra seleccionada
         elemento.classList.add('activo');
 
-        // 3. Actualizamos nuestro índice global para saber en cuál película estamos
         indexActual = indicadores.indexOf(elemento);
 
-        // 4. Rescatamos los datos del elemento
         const nuevaImagen = elemento.getAttribute('data-imagen');
         const nuevoTitulo = elemento.getAttribute('data-titulo');
         const nuevoLink = elemento.getAttribute('data-link');
 
-        // 5. Modificamos el banner en pantalla
         const banner = document.getElementById('mainBanner');
         if (nuevaImagen) {
             banner.style.backgroundImage = `url('${nuevaImagen}')`;
@@ -161,19 +155,15 @@
         document.getElementById('bannerTitulo').innerText = nuevoTitulo;
         document.getElementById('bannerLink').href = nuevoLink;
 
-        // 6. ¡Clave! Reiniciamos el contador automático para evitar saltos dobles
         reiniciarTemporizador();
     }
 
-    // Función que calcula cuál es la siguiente película y simula el clic
     function siguienteBanner() {
         const indicadores = document.querySelectorAll('.indicadores-carrusel .indicador');
         if (indicadores.length === 0) return;
 
-        // Avanza al siguiente índice. Si llega al final, vuelve a 0 usando el operador residuo (%)
         indexActual = (indexActual + 1) % indicadores.length;
-        
-        // Ejecutamos la función principal pasando el siguiente indicador
+
         cambiarBanner(indicadores[indexActual]);
     }
 
@@ -182,34 +172,34 @@
     }
 
     function reiniciarTemporizador() {
-        clearInterval(intervaloBanner); // Borra el tiempo acumulado anterior
-        iniciarTemporizador();          // Inicia un nuevo conteo limpio de 5 segundos
+        clearInterval(intervaloBanner); 
+        iniciarTemporizador();          
     }
 
-    // Arrancamos el carrusel automático inmediatamente cuando la página termine de cargar
+   
     document.addEventListener("DOMContentLoaded", function() {
         iniciarTemporizador();
     });
 </script>
 
 <style>
-    /* Diseño del banner gigante (Estilo Cineplanet) */
+
     .banner-destacado {
         position: relative; 
         width: 100%;
-        height: 88vh; /* Ocupará el 75% del alto de la pantalla del usuario */
-        min-height: 500px; /* Se asegura de que no sea muy pequeño en celulares */
-        background-size: cover !important; /* Estira la imagen sin deformarla */
-        background-position: 50% 45% !important; /* Muestra desde arriba (cabezas) hacia abajo */
+        height: 88vh; 
+        min-height: 500px; 
+        background-size: cover !important; 
+        background-position: 50% 45% !important; 
         background-repeat: no-repeat !important;
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Centra el título y botón verticalmente */
-        align-items: flex-start; /* Alinea el título y botón a la izquierda */
-        padding-left: 8%; /* Margen izquierdo para el texto */
+        justify-content: center; 
+        align-items: flex-start; 
+        padding-left: 8%; 
     }
 
-    /* Le damos un sombreado oscuro a la imagen para que el texto blanco resalte más */
+    
     .banner-destacado::before {
         content: '';
         position: absolute;
@@ -218,13 +208,13 @@
         z-index: 1;
     }
 
-    /* Aseguramos que el texto esté por encima de la sombra oscura */
+    
     .contenido-banner {
         position: relative;
         z-index: 2; 
     }
 
-    /* Centrar el contenedor de las barritas */
+  
     .indicadores-carrusel {
         position: absolute !important;
         bottom: 30px !important;

@@ -12,7 +12,6 @@
 {% block contenido %}
 <div class="butacas-container">
 
-    <!-- Panel izquierdo: resumen de compra -->
     <div class="butacas-info">
         {% if funcion %}
             {% if funcion.pelicula.imagen %}
@@ -43,7 +42,6 @@
         <p><strong>Total: ${{ total|floatformat:"0" }}</strong></p>
     </div>
 
-    <!-- Panel derecho: método de pago -->
     <div class="butacas-sala" style="display:flex; align-items:center; justify-content:center;">
         <div class="metodo-pago-card">
             <h3>Método de pago</h3>

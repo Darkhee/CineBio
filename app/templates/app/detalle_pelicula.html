@@ -36,7 +36,7 @@
         <h2>Elegir función</h2>
 
         {% if fechas_dict %}
-            <!-- Pestañas de fecha -->
+           
             <div class="fechas-tabs">
                 {% for key, data in fechas_dict.items %}
                 <button class="fecha-tab {% if forloop.first %}activo{% endif %}"
@@ -50,7 +50,7 @@
                 {% endfor %}
             </div>
 
-            <!-- Funciones por fecha -->
+        
             {% for key, data in fechas_dict.items %}
             <div class="fecha-funciones" id="fecha-{{ key }}"
                  {% if not forloop.first %}style="display:none;"{% endif %}>
