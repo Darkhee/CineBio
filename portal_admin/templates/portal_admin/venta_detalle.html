@@ -1,0 +1,155 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Detalle de Compra #{{ compra.id }} — CineBio Admin{% endblock %}
+{% block page_title %}Detalle de Compra #{{ compra.id }}{% endblock %}
+{% block breadcrumb %}
+    › <a href="{% url 'portal_admin:ventas_list' %}">Ventas</a> › #{{ compra.id }}
+{% endblock %}
+
+{% block contenido %}
+
+<div style="max-width:900px;">
+
+    {% if compra.estado == 'pendiente_devolucion' %}
+    <div class="card" style="margin-bottom:20px; border-color:#fcd34d; background:#fffbeb;">
+        <div class="card-body">
+            <p style="font-weight:600; color:#92400e; margin-bottom:6px;">
+                Función cancelada: {{ compra.funcion_cancelada_info }}
+            </p>
+            <p style="font-size:13px; color:#78350f; margin-bottom:14px;">
+                Esta compra quedó pendiente de devolución. Al procesar la devolución se
+                simulará el envío de un correo de aviso a {{ compra.correo_cliente }}.
+            </p>
+            <form method="POST" action="{% url 'portal_admin:procesar_devolucion' compra.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">
+                    Procesar Devolución de ${{ compra.total|floatformat:"0" }}
+                </button>
+            </form>
+        </div>
+    </div>
+    {% elif compra.estado == 'devuelta' %}
+    <div class="card" style="margin-bottom:20px; border-color:#d1d5db; background:#f9fafb;">
+        <div class="card-body">
+            <p style="font-weight:600; color:#374151;">
+                Devolución procesada el {{ compra.fecha_devolucion|date:"d/m/Y H:i" }}
+            </p>
+            <p style="font-size:13px; color:#6b7280;">
+                Función cancelada: {{ compra.funcion_cancelada_info }}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <h2>Datos del Cliente</h2>
+            {% if compra.usuario %}
+                <span class="badge badge-2d">Registrado</span>
+            {% else %}
+                <span class="badge badge-palomitas">Invitado</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if compra.usuario %}
+                <p><strong>Nombre:</strong>
+                    {% if perfil %}
+                        {{ perfil.nombre }} {{ perfil.apellido_paterno }} {{ perfil.apellido_materno }}
+                    {% else %}
+                        {{ compra.usuario.username }}
+                    {% endif %}
+                </p>
+                <p><strong>Correo:</strong> {{ compra.usuario.email }}</p>
+                {% if perfil %}
+                <p><strong>Documento:</strong> {{ perfil.tipo_documento }} {{ perfil.rut }}</p>
+                <p><strong>Teléfono:</strong> {{ perfil.telefono|default:"—" }}</p>
+                {% endif %}
+            {% else %}
+                <p><strong>Nombre:</strong> {{ compra.inv_nombre }} {{ compra.inv_apellido }}</p>
+                <p><strong>Correo:</strong> {{ compra.inv_correo }}</p>
+                <p><strong>Documento:</strong> {{ compra.inv_tipo_doc }} {{ compra.inv_documento }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <h2>Función</h2>
+        </div>
+        <div class="card-body">
+            {% if compra.funcion %}
+                <p><strong>Película:</strong> {{ compra.funcion.pelicula.nombre }}</p>
+                <p><strong>Sala:</strong> {{ compra.funcion.sala.nombre }}</p>
+                <p><strong>Fecha:</strong> {{ compra.funcion.fecha }} — {{ compra.funcion.hora|time:"H:i" }} hrs</p>
+                <p><strong>Tipo:</strong> {{ compra.funcion.get_tipo_display }}</p>
+                <p><strong>Precio por entrada:</strong> ${{ compra.funcion.precio|floatformat:"0" }}</p>
+            {% else %}
+                <p style="color:var(--text-secondary);">Esta compra fue solo de confitería, sin función asociada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if entradas %}
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <h2>Butacas ({{ entradas|length }})</h2>
+        </div>
+        <div class="card-body">
+            {% for entrada in entradas %}
+                <span class="badge badge-2d" style="margin:2px;">{{ entrada.butaca.fila }}{{ entrada.butaca.numero }}</span>
+            {% endfor %}
+            <p style="margin-top:12px;"><strong>Subtotal entradas:</strong> ${{ total_entradas|floatformat:"0" }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+            <h2>Confitería</h2>
+        </div>
+        <div class="card-body">
+            {% if items %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio unitario</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.producto.nombre }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>${{ item.producto.precio|floatformat:"0" }}</td>
+                            <td>${{ item.subtotal|floatformat:"0" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p style="margin-top:12px;"><strong>Subtotal confitería:</strong> ${{ total_confiteria|floatformat:"0" }}</p>
+            {% else %}
+                <p style="color:var(--text-secondary);">Sin productos de confitería.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <p style="font-size:13px; color:var(--text-secondary);">Fecha de compra: {{ compra.fecha_compra|date:"d/m/Y H:i" }}</p>
+            <div style="text-align:right;">
+                <p style="font-size:14px; color:var(--text-secondary); margin-bottom:4px;">Total pagado</p>
+                <p style="font-size:28px; font-weight:700; color:var(--success);">${{ compra.total|floatformat:"0" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:20px;">
+        <a href="{% url 'portal_admin:ventas_list' %}" class="btn btn-secondary">Volver a Ventas</a>
+    </div>
+
+</div>
+
+{% endblock %}

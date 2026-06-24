@@ -5,13 +5,10 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    # Django admin — SÓLO para gestión de Salas y Butacas
     path('admin/', admin.site.urls),
 
-    # Portal de administración personalizado (acceso separado, no vinculado desde el cine)
     path('gestion/', include('portal_admin.urls')),
 
-    # Aplicación principal de CineBio
     path('', include('app.urls')),
 ]
 

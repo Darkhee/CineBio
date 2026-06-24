@@ -1,0 +1,81 @@
+{% extends 'portal_admin/base.html' %}
+
+{% block titulo %}Usuarios — CineBio Admin{% endblock %}
+{% block page_title %}Usuarios Registrados{% endblock %}
+{% block breadcrumb %} › Usuarios{% endblock %}
+
+{% block contenido %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Socios registrados ({{ usuarios|length }})</h2>
+    </div>
+
+    <div class="table-responsive">
+        {% if usuarios %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Nombre completo</th>
+                    <th>Correo</th>
+                    <th>Documento</th>
+                    <th>Teléfono</th>
+                    <th>Ubicación</th>
+                    <th>Categoría</th>
+                    <th>Visitas</th>
+                    <th>Puntos</th>
+                    <th>Fecha registro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                {% with perfil=usuario.perfilusuario %}
+                <tr>
+                    <td>
+                        {% if perfil %}
+                            <strong>{{ perfil.nombre }} {{ perfil.apellido_paterno }} {{ perfil.apellido_materno }}</strong>
+                        {% else %}
+                            <strong>{{ usuario.username }}</strong>
+                        {% endif %}
+                    </td>
+                    <td>{{ usuario.email }}</td>
+                    <td>
+                        {% if perfil %}
+                            <span style="font-size:11px;color:var(--text-secondary);">{{ perfil.tipo_documento }}</span><br>
+                            {{ perfil.rut }}
+                        {% else %}
+                            <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ perfil.telefono|default:"—" }}</td>
+                    <td>
+                        {% if perfil and perfil.comuna %}
+                            {{ perfil.comuna }}, {{ perfil.region }}
+                        {% else %}
+                            <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perfil %}
+                            <span class="badge-categoria badge-{{ perfil.categoria }}">{{ perfil.get_categoria_display }}</span>
+                        {% else %}
+                            <span style="color:var(--text-secondary);font-size:12px;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ perfil.visitas|default:0 }}</td>
+                    <td>{{ perfil.puntos|default:0 }}</td>
+                    <td style="font-size:12px;">{{ usuario.date_joined|date:"d/m/Y" }}</td>
+                </tr>
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <p>No hay usuarios registrados aún.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

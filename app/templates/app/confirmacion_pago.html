@@ -43,9 +43,12 @@
         <h2 class="total">Total: ${{ compra.total }}</h2>
     </div>
 
-    <p>Hemos enviado tu detalle de compra a tu correo registrado.</p>
-
-    <a href="{% url 'listar_peliculas' %}" class="btn-comprar">Volver al inicio</a>
+    <a href="{% url 'descargar_boleto' compra.id %}" class="btn-comprar" style="margin-right:12px;">
+        Descargar Boleto PDF
+    </a>
+    <a href="{% url 'listar_peliculas' %}" class="btn-comprar" style="background-color:transparent;border:2px solid #52413f;color:#52413f;">
+        Volver al inicio
+    </a>
 </div>
 
 {% endblock %}

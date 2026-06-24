@@ -2,16 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
+from django.http import HttpResponse
+from django.core.exceptions import ValidationError
+from .validators import validar_documento, validar_correo
+from xhtml2pdf import pisa
 from .models import (
     Pelicula, Funcion, Butaca, ProductoConfiteria,
     Compra, Entrada, ItemConfiteria, PerfilUsuario, 
 )
-
-
-# ──────────────────────────────────────────────────────────────
-# Películas
-# ──────────────────────────────────────────────────────────────
-
 def listar_peliculas(request):
     peliculas = Pelicula.objects.all()
     return render(request, 'app/listar_peliculas.html', {'peliculas': peliculas})
@@ -64,11 +63,6 @@ def detalle_pelicula(request, id):
         'fechas_dict': fechas_dict,
         'hoy': hoy,
     })
-
-
-# ──────────────────────────────────────────────────────────────
-# Autenticación
-# ──────────────────────────────────────────────────────────────
 
 def registro(request):
     from .forms import SocioRegistroForm
@@ -124,7 +118,6 @@ def login_usuario(request):
         if formulario.is_valid():
             usuario = formulario.get_user()
             login(request, usuario)
-            # Si viene del flujo de compra, continuar a confitería
             next_page = request.POST.get('next', '')
             if next_page:
                 return redirect(next_page)
@@ -142,15 +135,9 @@ def logout_usuario(request):
     logout(request)
     return redirect('listar_peliculas')
 
-
-# ──────────────────────────────────────────────────────────────
-# Butacas: lógica por función
-# ──────────────────────────────────────────────────────────────
-
 def seleccionar_butacas(request, funcion_id):
     funcion = get_object_or_404(Funcion, id=funcion_id)
 
-    # IDs de butacas ocupadas EN ESTA FUNCIÓN (no de forma global)
     ocupadas_esta_funcion = set(
         Entrada.objects.filter(compra__funcion=funcion)
         .values_list('butaca_id', flat=True)
@@ -158,7 +145,6 @@ def seleccionar_butacas(request, funcion_id):
 
     butacas_qs = Butaca.objects.filter(sala=funcion.sala).order_by('fila', 'numero')
 
-    # Calcular estado_vista por butaca (no toca el estado global del modelo)
     for b in butacas_qs:
         if b.estado == 'inhabilitada':
             b.estado_vista = 'inhabilitada'
@@ -179,19 +165,13 @@ def confirmar_butacas(request, funcion_id):
         butacas_ids = request.POST.getlist('butacas')
         request.session['funcion_id'] = funcion_id
         request.session['butacas_ids'] = butacas_ids
-        request.session.pop('invitado', None)   # limpiar invitado anterior si lo hay
+        request.session.pop('invitado', None)   
 
-        # Si ya está logueado como usuario normal, saltar directo a confitería
         if request.user.is_authenticated and not request.user.is_staff:
             return redirect('confiteria')
 
         return redirect('tipo_compra')
     return redirect('listar_peliculas')
-
-
-# ──────────────────────────────────────────────────────────────
-# Flujo de tipo de compra (registrado vs invitado)
-# ──────────────────────────────────────────────────────────────
 
 def tipo_compra(request):
     funcion_id       = request.session.get('funcion_id')
@@ -225,11 +205,29 @@ def datos_invitado(request):
         apellido  = request.POST.get('apellido', '').strip()
         correo    = request.POST.get('correo', '').strip()
 
-        if not tipo_doc:   errores['tipo_doc']  = 'Selecciona el tipo de documento.'
-        if not documento:  errores['documento'] = 'Ingresa tu número de documento.'
-        if not nombre:     errores['nombre']    = 'Ingresa tu nombre.'
-        if not apellido:   errores['apellido']  = 'Ingresa tu apellido.'
-        if not correo:     errores['correo']    = 'Ingresa tu correo.'
+        if not tipo_doc:
+            errores['tipo_doc'] = 'Selecciona el tipo de documento.'
+
+        if not documento:
+            errores['documento'] = 'Ingresa tu número de documento.'
+        elif tipo_doc:
+            try:
+                documento = validar_documento(tipo_doc, documento)
+            except ValidationError as e:
+                errores['documento'] = e.message
+
+        if not nombre:
+            errores['nombre'] = 'Ingresa tu nombre.'
+        if not apellido:
+            errores['apellido'] = 'Ingresa tu apellido.'
+
+        if not correo:
+            errores['correo'] = 'Ingresa tu correo.'
+        else:
+            try:
+                correo = validar_correo(correo)
+            except ValidationError as e:
+                errores['correo'] = e.message
 
         if not errores:
             request.session['invitado'] = {
@@ -239,14 +237,12 @@ def datos_invitado(request):
                 'apellido':  apellido,
                 'correo':    correo,
             }
+            if request.session.get('confiteria_items'):
+                return redirect('pago')
             return redirect('confiteria')
 
     return render(request, 'app/datos_invitado.html', {'errores': errores})
 
-
-# ──────────────────────────────────────────────────────────────
-# Confitería
-# ──────────────────────────────────────────────────────────────
 def confiteria(request):
     if request.method == 'POST':
         items = {}
@@ -257,7 +253,6 @@ def confiteria(request):
 
         butacas_ids = request.session.get('butacas_ids', [])
 
-        # Solo bloquea si NO hay confitería Y tampoco hay entradas en curso
         if not items and not butacas_ids:
             return redirect('confiteria')
 
@@ -275,10 +270,6 @@ def confiteria(request):
     })
 
 
-# ──────────────────────────────────────────────────────────────
-# Pago: soporta usuario registrado e invitado, y suma confitería
-# ──────────────────────────────────────────────────────────────
-
 def pago(request):
     funcion_id       = request.session.get('funcion_id')
     butacas_ids      = request.session.get('butacas_ids', [])
@@ -292,7 +283,6 @@ def pago(request):
     if not usuario_ok and not invitado:
         return redirect('tipo_compra')
 
-    # Solo redirige a la pantalla de método de pago; nada se guarda aún
     return redirect('metodo_pago')
 
 
@@ -331,52 +321,62 @@ def metodo_pago(request):
         metodo = request.POST.get('metodo')
         if not metodo:
             error = 'Debes seleccionar un método de pago.'
-        else:
-            # ── Aquí SÍ se guarda la venta, solo al confirmar ──
-            if usuario_ok:
-                compra = Compra.objects.create(
-                    usuario=request.user,
-                    funcion=funcion,
-                    total=total,
-                )
+        else:            
+            sin_stock = [
+                item for item in items_preview
+                if item['cantidad'] > item['producto'].stock
+            ]
+            if sin_stock:
+                nombres = ', '.join(i['producto'].nombre for i in sin_stock)
+                error = f'Sin stock suficiente para: {nombres}. Vuelve atrás y ajusta las cantidades.'
             else:
-                compra = Compra.objects.create(
-                    usuario=None,
-                    funcion=funcion,
-                    total=total,
-                    inv_tipo_doc  = invitado.get('tipo_doc', ''),
-                    inv_documento = invitado.get('documento', ''),
-                    inv_nombre    = invitado.get('nombre', ''),
-                    inv_apellido  = invitado.get('apellido', ''),
-                    inv_correo    = invitado.get('correo', ''),
-                )
+                if usuario_ok:
+                    compra = Compra.objects.create(
+                        usuario=request.user,
+                        funcion=funcion,
+                        total=total,
+                    )
+                else:
+                    compra = Compra.objects.create(
+                        usuario=None,
+                        funcion=funcion,
+                        total=total,
+                        inv_tipo_doc  = invitado.get('tipo_doc', ''),
+                        inv_documento = invitado.get('documento', ''),
+                        inv_nombre    = invitado.get('nombre', ''),
+                        inv_apellido  = invitado.get('apellido', ''),
+                        inv_correo    = invitado.get('correo', ''),
+                    )
 
-            for bid in butacas_ids:
-                butaca = get_object_or_404(Butaca, id=bid)
-                Entrada.objects.create(compra=compra, butaca=butaca)
+                for bid in butacas_ids:
+                    butaca = get_object_or_404(Butaca, id=bid)
+                    Entrada.objects.create(compra=compra, butaca=butaca)
 
-            for item in items_preview:
-                ItemConfiteria.objects.create(
-                    compra=compra,
-                    producto=item['producto'],
-                    cantidad=item['cantidad'],
-                )
+                for item in items_preview:
+                    ItemConfiteria.objects.create(
+                        compra=compra,
+                        producto=item['producto'],
+                        cantidad=item['cantidad'],
+                    )
+                    producto = item['producto']
+                    producto.stock = max(0, producto.stock - item['cantidad'])
+                    producto.save()
 
-            if usuario_ok:
-                try:
-                    perfil = request.user.perfilusuario
-                    if butacas_ids:
-                        perfil.visitas += 1
-                    if total >= 2000:
-                        perfil.puntos += total // 2000
-                    perfil.save()
-                except Exception:
-                    pass
+                if usuario_ok:
+                    try:
+                        perfil = request.user.perfilusuario
+                        if butacas_ids:
+                            perfil.visitas += 1
+                        if total >= 2000:
+                            perfil.puntos += total // 2000
+                        perfil.actualizar_categoria()
+                        perfil.save()
+                    except Exception:
+                        pass
+                for key in ('funcion_id', 'butacas_ids', 'invitado', 'confiteria_items'):
+                    request.session.pop(key, None)
 
-            for key in ('funcion_id', 'butacas_ids', 'invitado', 'confiteria_items'):
-                request.session.pop(key, None)
-
-            return redirect('confirmacion', compra_id=compra.id)
+                return redirect('confirmacion', compra_id=compra.id)
 
     return render(request, 'app/metodo_pago.html', {
         'funcion':          funcion,
@@ -396,12 +396,43 @@ def confirmacion(request, compra_id):
         'items':    items,
     })
 
+def descargar_boleto(request, compra_id):
+    compra = get_object_or_404(Compra, id=compra_id)
+    entradas = Entrada.objects.filter(compra=compra)
+    items = ItemConfiteria.objects.filter(compra=compra)
 
+    template = get_template('app/boleto_pdf.html')
+    html = template.render({
+        'compra': compra,
+        'entradas': entradas,
+        'items': items,
+    })
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="boleto_cinebio_{compra.id}.pdf"'
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Hubo un error al generar el boleto.', status=500)
+
+    return response
 @login_required
 def perfil(request):
     try:
         perfil = request.user.perfilusuario
     except Exception:
         perfil = None
+
+    visitas_faltantes = None
+    siguiente_categoria = None
+    if perfil:
+        visitas_faltantes, siguiente_categoria = perfil.visitas_para_siguiente()
+
     compras = Compra.objects.filter(usuario=request.user).order_by('-fecha_compra')
-    return render(request, 'app/perfil.html', {'perfil': perfil, 'compras': compras})
+    return render(request, 'app/perfil.html', {
+        'perfil': perfil,
+        'compras': compras,
+        'visitas_faltantes': visitas_faltantes,
+        'siguiente_categoria': siguiente_categoria,
+    })

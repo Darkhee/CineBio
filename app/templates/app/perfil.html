@@ -21,7 +21,7 @@
             {% if perfil %}
             <p>RUT {{ perfil.rut }}</p>
             <br>
-            <p><em>{{ perfil.get_categoria_display }}</em></p>
+            <p><span class="badge-categoria badge-{{ perfil.categoria }}">{{ perfil.get_categoria_display }}</span></p>
             {% endif %}
         </div>
 
@@ -32,7 +32,11 @@
                 <span class="visitas-numero">{{ perfil.visitas|default:0 }}</span>
                 <span>Visitas</span>
             </div>
-            <p>+3 Visitas para subir a categoría Bio-Silver</p>
+            {% if siguiente_categoria %}
+            <p>+{{ visitas_faltantes }} visita{{ visitas_faltantes|pluralize }} para subir a {{ siguiente_categoria }}</p>
+            {% else %}
+            <p>Ya tienes el rango máximo: CineBio Black</p>
+            {% endif %}
         </div>
 
         <div class="perfil-card text-center">
@@ -52,17 +56,31 @@
     </div>
 
     <div id="beneficios" class="tab-content">
-        <div class="beneficios-grid">
-            <div class="beneficio-card">
-                <h3> Beneficios entradas</h3>
-                <p><strong>Ticket Dual:</strong> 2 Entradas generales 2D por $5100</p>
-                <p><strong>Ticket puntos:</strong> Entrada general 2D por $2700 utilizando 2 Puntos</p>
+        {% if perfil %}
+        <div class="rango-roadmap">
+            {% for key, data in perfil.INFO_CATEGORIAS.items %}
+            <div class="rango-card rango-{{ key }} {% if perfil.categoria == key %}rango-actual{% elif perfil.visitas >= data.visitas_minimas %}rango-logrado{% else %}rango-bloqueado{% endif %}">
+                <div class="rango-header">
+                    <h3>{{ data.nombre }}</h3>
+                    {% if perfil.categoria == key %}
+                        <span class="rango-badge-actual">Tu rango actual</span>
+                    {% elif perfil.visitas >= data.visitas_minimas %}
+                        <span class="rango-badge-logrado">Alcanzado</span>
+                    {% else %}
+                        <span class="rango-badge-bloqueado">Desde {{ data.visitas_minimas }} visitas</span>
+                    {% endif %}
+                </div>
+                <ul>
+                    {% for beneficio in data.beneficios %}
+                    <li>{{ beneficio }}</li>
+                    {% endfor %}
+                </ul>
             </div>
-            <div class="beneficio-card">
-                <h3> Beneficios confitería</h3>
-                <p><strong>Combo Premium:</strong> Palomita gigante + 2 Bebestibles por $9500 utilizando 3 Puntos</p>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p>No hay información de socio disponible.</p>
+        {% endif %}
     </div>
 
     <div id="compras" class="tab-content" style="display:none">

@@ -16,6 +16,7 @@ urlpatterns = [
    path('metodo-pago/', views.metodo_pago, name='metodo_pago'),
     path('pago/', views.pago, name='pago'),
     path('confirmacion/<int:compra_id>/', views.confirmacion, name='confirmacion'),
+    path('boleto/<int:compra_id>/', views.descargar_boleto, name='descargar_boleto'),
     path('perfil/', views.perfil, name='perfil'),
     path('cartelera/', views.cartelera_completa, name='cartelera_completa'),
     path('nosotros/', views.nosotros, name='nosotros'),

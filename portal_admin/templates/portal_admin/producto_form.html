@@ -24,7 +24,7 @@
                 {% endif %}
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
                 <div class="form-field">
                     <label for="id_categoria">{{ form.categoria.label }}</label>
                     {{ form.categoria }}
@@ -37,6 +37,13 @@
                     {{ form.precio }}
                     {% if form.precio.errors %}
                         <ul class="errorlist">{% for e in form.precio.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-field">
+                    <label for="id_stock">{{ form.stock.label }}</label>
+                    {{ form.stock }}
+                    {% if form.stock.errors %}
+                        <ul class="errorlist">{% for e in form.stock.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}
                 </div>
             </div>

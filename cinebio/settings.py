@@ -20,8 +20,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',          # aplicación principal del cine
-    'portal_admin', # panel de gestión separado
+    'app',          
+    'portal_admin', 
 ]
 
 MIDDLEWARE = [
@@ -83,7 +83,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Archivos multimedia (pósters de películas)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/login/'

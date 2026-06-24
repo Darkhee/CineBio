@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    @page { size: letter; margin: 2cm; }
+    body { font-family: Helvetica; color: #2d2014; font-size: 11px; }
+    .header { text-align: center; border-bottom: 2px solid #52413f; padding-bottom: 10px; margin-bottom: 16px; }
+    .header h1 { color: #52413f; font-size: 24px; margin: 0; }
+    .header p { font-size: 10px; color: #888; margin: 2px 0 0; }
+    .seccion { margin-bottom: 14px; }
+    .seccion h2 { font-size: 13px; color: #52413f; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 8px; }
+    table.datos { width: 100%; }
+    table.datos td { padding: 3px 0; font-size: 11px; }
+    table.datos td.label { color: #888; width: 140px; }
+    table.items { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    table.items th { background-color: #52413f; color: white; padding: 6px 8px; font-size: 10px; text-align: left; }
+    table.items td { padding: 6px 8px; font-size: 10px; border-bottom: 1px solid #eee; }
+    .total-box { margin-top: 16px; text-align: right; border-top: 2px solid #52413f; padding-top: 10px; }
+    .total-box .monto { font-size: 22px; font-weight: bold; color: #52413f; }
+    .footer { margin-top: 30px; text-align: center; font-size: 9px; color: #aaa; }
+    .butaca-tag { background-color: #e0e7ff; color: #3730a3; padding: 3px 10px; font-size: 10px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>CineBio</h1>
+        <p>Boleto Electrónico — Compra #{{ compra.id }}</p>
+    </div>
+
+    <div class="seccion">
+        <h2>Datos del Cliente</h2>
+        <table class="datos">
+            {% if compra.usuario %}
+                <tr><td class="label">Nombre:</td><td>{{ compra.usuario.get_full_name|default:compra.usuario.username }}</td></tr>
+                <tr><td class="label">Correo:</td><td>{{ compra.usuario.email }}</td></tr>
+            {% else %}
+                <tr><td class="label">Nombre:</td><td>{{ compra.inv_nombre }} {{ compra.inv_apellido }}</td></tr>
+                <tr><td class="label">Correo:</td><td>{{ compra.inv_correo }}</td></tr>
+                <tr><td class="label">Documento:</td><td>{{ compra.inv_tipo_doc }} {{ compra.inv_documento }}</td></tr>
+            {% endif %}
+        </table>
+    </div>
+
+    {% if compra.funcion %}
+    <div class="seccion">
+        <h2>Función</h2>
+        <table class="datos">
+            <tr><td class="label">Película:</td><td>{{ compra.funcion.pelicula.nombre }}</td></tr>
+            <tr><td class="label">Sala:</td><td>{{ compra.funcion.sala.nombre }}</td></tr>
+            <tr><td class="label">Fecha:</td><td>{{ compra.funcion.fecha }}</td></tr>
+            <tr><td class="label">Hora:</td><td>{{ compra.funcion.hora|time:"H:i" }} hrs</td></tr>
+            <tr><td class="label">Tipo:</td><td>{{ compra.funcion.get_tipo_display }}</td></tr>
+        </table>
+
+        {% if entradas %}
+        <p style="margin-top:8px; margin-bottom:4px; color:#888;">Butacas:
+            {% for entrada in entradas %}
+            <span class="butaca-tag">{{ entrada.butaca.fila }}{{ entrada.butaca.numero }}</span>&nbsp;
+            {% endfor %}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if items %}
+    <div class="seccion">
+        <h2>Confitería</h2>
+        <table class="items">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.producto.precio|floatformat:"0" }}</td>
+                <td>${{ item.subtotal|floatformat:"0" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="total-box">
+        <p style="margin:0; font-size:11px; color:#888;">Fecha de compra: {{ compra.fecha_compra|date:"d/m/Y H:i" }}</p>
+        <p class="monto">Total pagado: ${{ compra.total|floatformat:"0" }}</p>
+    </div>
+
+    <div class="footer">
+        <p>Este boleto es válido como comprobante de compra en CineBio.</p>
+        <p>Presenta este documento en la entrada de la sala junto a tu documento de identidad.</p>
+    </div>
+
+</body>
+</html>

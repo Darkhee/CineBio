@@ -25,14 +25,14 @@ header {
     z-index: 100;
 }
 
-nav {
+header nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 100%;
 }
 
-nav button {
+header nav button {
     background: none;
     border: none;
     color: white;
@@ -1009,9 +1009,6 @@ footer p {
     color: white;
 }
 
-
-
-
 .nosotros-container {
     padding: 100px 30px 50px;
 }
@@ -1094,4 +1091,89 @@ footer p {
     width: auto;
     object-fit: contain;
     display: block;
+}
+
+
+.badge-categoria {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.badge-clasico { background: #6b5553; color: #fff; }
+.badge-plata   { background: #b0b0b0; color: #1f1f1f; }
+.badge-oro     { background: #d4af37; color: #2d2014; }
+.badge-black   { background: #1a1a1a; color: #d4af37; border: 1px solid #d4af37; }
+
+.rango-roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rango-card {
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1.5px solid #e0dbd6;
+    background: #fafafa;
+}
+
+.rango-card.rango-bloqueado {
+    opacity: 0.55;
+}
+
+.rango-card.rango-actual {
+    border-color: #52413f;
+    background: #fff5f5;
+}
+
+.rango-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rango-header h3 {
+    font-size: 17px;
+    margin: 0;
+}
+
+.rango-badge-actual {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #52413f;
+    color: #fff;
+}
+
+.rango-badge-logrado {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.rango-badge-bloqueado {
+    font-size: 12px;
+    color: #888;
+}
+
+.rango-card ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.rango-card li {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #444;
 }

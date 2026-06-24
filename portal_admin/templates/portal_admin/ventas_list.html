@@ -1,11 +1,10 @@
-{{% extends 'portal_admin/base.html' %}
+{% extends 'portal_admin/base.html' %}
 
 {% block titulo %}Ventas — CineBio Admin{% endblock %}
 {% block page_title %}Ventas{% endblock %}
 {% block breadcrumb %} › Ventas{% endblock %}
 
 {% block contenido %}
-
 
 <div class="stats-grid" style="margin-bottom:24px;">
     <div class="stat-card">
@@ -44,6 +43,7 @@
                     <th>Confitería</th>
                     <th>Fecha compra</th>
                     <th>Total</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,9 +129,19 @@
                     </td>
 
                     <td style="font-size:12px;">{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+<td>
+                        <strong style="color:var(--success);">${{ compra.total|floatformat:"0" }}</strong>
+                        {% if compra.estado == 'pendiente_devolucion' %}
+                            <br><span class="badge" style="background:#fffbeb;color:#92400e;margin-top:4px;">Pendiente de devolución</span>
+                        {% elif compra.estado == 'devuelta' %}
+                            <br><span class="badge" style="background:#f3f4f6;color:#374151;margin-top:4px;">Devuelta</span>
+                        {% endif %}
+                    </td>
 
                     <td>
-                        <strong style="color:var(--success);">${{ compra.total|floatformat:"0" }}</strong>
+                        <a href="{% url 'portal_admin:venta_detalle' compra.id %}" class="btn btn-secondary btn-sm">
+                            Ver Detalle
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}

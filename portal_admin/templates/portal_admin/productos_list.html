@@ -23,9 +23,9 @@
                     <th>Nombre</th>
                     <th>Categoría</th>
                     <th>Precio</th>
+                    <th>Stock</th>
                     <th>Acciones</th>
                 </tr>
-            </thead>
             <tbody>
                 {% for producto in productos %}
                 <tr>
@@ -43,6 +43,15 @@
                         </span>
                     </td>
                     <td>${{ producto.precio|floatformat:"0" }}</td>
+                    <td>
+                        {% if producto.stock == 0 %}
+                            <span class="badge" style="background:#fef2f2;color:#991b1b;">Agotado</span>
+                        {% elif producto.stock < 10 %}
+                            <span class="badge" style="background:#fffbeb;color:#92400e;">{{ producto.stock }} unid.</span>
+                        {% else %}
+                            <span class="badge badge-bebidas">{{ producto.stock }} unid.</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <div class="actions-cell">
                             <a href="{% url 'portal_admin:producto_edit' producto.pk %}"

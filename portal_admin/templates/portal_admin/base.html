@@ -63,6 +63,10 @@
                    class="{% if 'ventas' in request.resolver_match.url_name %}active{% endif %}">
                     Ventas
                 </a>
+                <a href="{% url 'portal_admin:lista_usuarios' %}"
+                   class="{% if 'usuarios' in request.resolver_match.url_name %}active{% endif %}">
+                    Usuarios
+                </a>
             </nav>
         </div>
 
